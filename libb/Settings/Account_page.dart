@@ -1,0 +1,204 @@
+import 'package:flutter/material.dart';
+
+
+import '../Home/home.dart';
+import '../Progress/progress_page.dart';
+import 'Settings_page.dart';
+
+class account_page extends StatelessWidget {
+  const account_page({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+
+        title: Text('Account',
+            style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Color.fromRGBO(47, 47, 47, 1),
+                fontFamily: 'Nonito',
+                fontSize: 29)),
+      ),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Name',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Color.fromRGBO(102, 102, 102, 1),
+                    fontFamily: 'Nonito',
+                    fontSize: 14),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: SizedBox(
+                  height: 40,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                        hintText: 'Susy',
+                        contentPadding: EdgeInsets.all(10),
+                        suffixIcon: Icon(Icons.edit)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text('Email',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Color.fromRGBO(102, 102, 102, 1),
+                      fontFamily: 'Nonito',
+                      fontSize: 14)),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: SizedBox(
+                  height: 40,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      hintText: 'examplemail@mail.com',
+                      contentPadding: EdgeInsets.all(10),
+                      suffixIcon: Icon(Icons.edit),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text('Password',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Color.fromRGBO(102, 102, 102, 1),
+                      fontFamily: 'Nonito',
+                      fontSize: 14)),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(5)),
+                  child: SizedBox(
+                    height: 40,
+                    child: TextFormField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: '****************',
+                        suffixIcon: Icon(Icons.visibility_off_sharp),
+                        contentPadding: EdgeInsets.all(10),
+                      ),
+                    ),
+                  )),
+              SizedBox(
+                height: 20,
+              ),
+              Text('Password Confirmation',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Color.fromRGBO(102, 102, 102, 1),
+                      fontFamily: 'Nonito',
+                      fontSize: 14)),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: SizedBox(
+                    height: 40,
+                    child: TextFormField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                          hintText: '**************',
+                          suffixIcon: Icon(Icons.visibility_off_sharp),
+                          contentPadding: EdgeInsets.all(10)),
+                    ),
+                  )),
+              SizedBox(height: 30),
+              Ink(
+                width: 400,
+                height: 45,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    gradient: LinearGradient(
+                        colors: <Color>[
+                          Color.fromRGBO(255, 164, 80, 1),
+                          Color.fromRGBO(255, 92, 0, 1),
+                        ],
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.centerRight)),
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
+                      backgroundColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10))),
+                  child: Text(
+                      'Update',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Color.fromRGBO(251, 251, 251, 1),
+                          fontFamily: 'Nonito',
+                          fontSize: 14)),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(items: <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+            icon: IconButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> homepage()));
+              },
+              icon: Icon(
+                Icons.home,
+              ),
+            ),
+            label: ''),
+        BottomNavigationBarItem(
+            icon: IconButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => progresss()));
+              },
+              icon: Icon(Icons.trending_up_outlined),
+            ),
+            label: ''),
+        BottomNavigationBarItem(
+            icon: IconButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => settings()));
+              },
+              icon: Icon(Icons.settings),
+            ),
+            label: '')
+      ]),
+    );
+  }
+}
