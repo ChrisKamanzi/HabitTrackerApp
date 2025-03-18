@@ -10,7 +10,7 @@ class newGoal extends StatefulWidget {
 }
 
 class _newGoalState extends State<newGoal> {
-  TextEditingController _yourGoal = TextEditingController();
+  final TextEditingController _yourGoal = TextEditingController();
   String? _selected;
   String? habbitType;
   String? selectedHabit;
@@ -121,6 +121,7 @@ class _newGoalState extends State<newGoal> {
                         _selected = newVal;
                       });
                     },
+
                     items: const [
                       DropdownMenuItem<String>(
                         value: '1 month(30 days)',
@@ -140,6 +141,7 @@ class _newGoalState extends State<newGoal> {
             Card(
               color: Colors.transparent,
               elevation: 0,
+
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5),
                   side: BorderSide(color: Colors.grey)),
@@ -152,7 +154,8 @@ class _newGoalState extends State<newGoal> {
                   onChanged: (String? newValue) {
                     setState(() {
                       habbitType = newValue;
-                    });
+                    }
+                    );
                   },
                   items: const [
                     DropdownMenuItem<String>(
@@ -295,7 +298,6 @@ class _newGoalState extends State<newGoal> {
       _selected = null;
       habbitType = null;
       selectedHabit = null;
-    }
-    );
+    });
   }
 }

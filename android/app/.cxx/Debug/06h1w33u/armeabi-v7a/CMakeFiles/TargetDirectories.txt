@@ -1,0 +1,2 @@
+/Users/user/Desktop/HabitTrackerApp/android/app/.cxx/Debug/06h1w33u/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/user/Desktop/HabitTrackerApp/android/app/.cxx/Debug/06h1w33u/armeabi-v7a/CMakeFiles/rebuild_cache.dir

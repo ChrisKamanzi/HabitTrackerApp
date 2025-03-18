@@ -44,7 +44,9 @@ class _goals_progressState extends State<goals_progress> {
                                 fontWeight: FontWeight.w700,
                                 color: Color.fromRGBO(47, 47, 47, 1),
                               ),
-                            ))),
+                            )
+                        )
+                    ),
                     DropdownMenuItem(
                         value: 'Two',
                         child: Text(
