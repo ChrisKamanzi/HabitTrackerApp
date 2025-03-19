@@ -22,6 +22,7 @@ class _homepageState extends State<homepage> {
   String? _selected;
   String? habbitType;
   var selectedValue;
+
   final CollectionReference habitsCollection =
       FirebaseFirestore.instance.collection('Habits');
   int _selectedIndex = 0;
@@ -51,11 +52,13 @@ class _homepageState extends State<homepage> {
     User? user = FirebaseAuth.instance.currentUser;
     String username;
     DateTime now = DateTime.now();
+    String formattedDate = DateFormat('EEEE, dd MMMM yyyy').format(now);
+
     final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '$now',
+          '$formattedDate',
           style: TextStyle(
               fontFamily: 'Nonito', fontWeight: FontWeight.w700, fontSize: 16),
           textAlign: TextAlign.start,
@@ -84,8 +87,10 @@ class _homepageState extends State<homepage> {
                             fontFamily: 'Nonito',
                             fontWeight: FontWeight.w700,
                             color: Color.fromRGBO(255, 164, 80, 1),
-                          ))
-                    ]),
+                          )
+                      )
+                    ]
+                ),
               ),
             ),
             SizedBox(height: 30),
@@ -578,8 +583,12 @@ class _homepageState extends State<homepage> {
             BottomNavigationBarItem(
                 icon: IconButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => homepage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => homepage()
+                        )
+                    );
                   },
                   icon: Icon(
                     Icons.home,

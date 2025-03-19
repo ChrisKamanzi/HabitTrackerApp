@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-
 import '../Home/home.dart';
 import '../Progress/progress_page.dart';
 import 'Account_page.dart';
@@ -14,12 +12,13 @@ class settings extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          'Setting',
+          'Settings',
           style: TextStyle(
               fontFamily: 'Nonito',
               fontWeight: FontWeight.w700,
               fontSize: 29,
-              color: Color.fromRGBO(47, 47, 47, 1)),
+              color: Color.fromRGBO(47, 47, 47, 1)
+          ),
         ),
       ),
       body: Padding(
@@ -51,7 +50,8 @@ class settings extends StatelessWidget {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 fontFamily: 'Nonito',
-                                color: Color.fromRGBO(47, 47, 47, 1)),
+                                color: Color.fromRGBO(47, 47, 47, 1)
+                            ),
                           ),
                         ),
                         Padding(
@@ -62,9 +62,7 @@ class settings extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                SizedBox(height: 10),
                 Container(
                   width: 422,
                   height: 58,
@@ -75,39 +73,13 @@ class settings extends StatelessWidget {
                         Padding(
                             padding: const EdgeInsets.all(10),
                             child: Text(
-                              'Terms and Conditions',
+                              'Languages',
                               style: TextStyle(
                                   fontFamily: 'Nonito',
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
                                   color: Color.fromRGBO(47, 47, 47, 1)),
-                            )),
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Icon(Icons.keyboard_arrow_right),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Container(
-                  width: 422,
-                  height: 58,
-                  child: Card(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Text(
-                            'Policy',
-                            style: TextStyle(
-                                fontFamily: 'Nonito',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                                color: Color.fromRGBO(47, 47, 47, 1)),
-                          ),
+                            )
                         ),
                         Padding(
                           padding: const EdgeInsets.all(10),
@@ -128,7 +100,7 @@ class settings extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(10),
                           child: Text(
-                            'About App',
+                            'Theme',
                             style: TextStyle(
                                 fontFamily: 'Nonito',
                                 fontWeight: FontWeight.w700,
@@ -143,7 +115,8 @@ class settings extends StatelessWidget {
                       ],
                     ),
                   ),
-                )
+                ),
+                SizedBox(height: 10),
               ],
             ),
           ),

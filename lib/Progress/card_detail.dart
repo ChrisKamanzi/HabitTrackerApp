@@ -17,7 +17,9 @@ class card_detail extends StatelessWidget {
             TableCalendar(
                 focusedDay: DateTime.now(),
                 firstDay: DateTime.utc(2000, 1, 1),
-                lastDay: DateTime.utc(2040, 3, 10)),
+                lastDay: DateTime.utc(2040, 3, 10
+                )
+            ),
             Container(
               padding:
                   EdgeInsets.only(left: 30, right: 30, top: 20, bottom: 20),
@@ -59,7 +61,9 @@ class card_detail extends StatelessWidget {
                           fontFamily: 'Nonito',
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: Color.fromRGBO(47, 47, 47, 1)),
+                          color: Color.fromRGBO(47, 47, 47, 1
+                          )
+                      ),
                     ),
                     Text(
                       'Journaling',

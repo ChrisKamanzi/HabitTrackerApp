@@ -148,7 +148,7 @@ class _loginState extends State<login> {
                           color: Color.fromRGBO(127, 127, 127, 1)),
                     ),
                     SizedBox(
-                      width: 50,
+                      width: 30,
                     ),
                     TextButton(
                         onPressed: () {

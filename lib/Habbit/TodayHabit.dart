@@ -82,26 +82,37 @@ class _habbit_pageState extends State<habbit_page> {
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return Center(child: Text('No habits found.'));
                 }
-                return ListView(
-                  children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                    Map<String, dynamic> data =
-                    document.data() as Map<String, dynamic>;
-                    bool isCompleted = data['completed'] ?? false;
 
-                    DateTime now = DateTime.now();
-                    String formattedDate = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+                var everydayHabits = snapshot.data!.docs.where((document) {
+                  Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+                  return data['Habit type'] == 'Everyday';
+                }).toList();
+
+                if (everydayHabits.isEmpty) {
+                  return Center(child: Text('No everyday habits found.'));
+                }
+
+
+                String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+                return ListView(
+                  children: everydayHabits.map((DocumentSnapshot document) {
+                    Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+
+
+                    Map<String, dynamic>? completedDays = data['completedDays'];
+                    bool isCompleted = completedDays != null && completedDays.containsKey(today);
+
                     return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         width: 500,
-                        height: 80,
+                        height: 70,
                         child: Card(
                           color: isCompleted
-                              ? Color.fromRGBO(
-                              237, 255, 244, 1)
-                              : Colors.grey[200],
+                              ? Color.fromRGBO(237, 255, 244, 1)
+                              : Colors.white70,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -119,22 +130,23 @@ class _habbit_pageState extends State<habbit_page> {
                                     color: Color.fromRGBO(55, 200, 113, 1),
                                   ),
                                 ),
-
                                 Row(
                                   children: [
                                     Checkbox(
                                       value: isCompleted,
                                       onChanged: (bool? newValue) {
-
-                                        habitsCollection
-                                            .doc(document.id)
-                                            .update({
-                                          'completed': newValue,
-                                          'completedDays.$formattedDate': newValue,
-                                        });
-                                        },
-                                      activeColor:
-                                      Color.fromRGBO(55, 200, 113, 1),
+                                        if (newValue != null) {
+                                          habitsCollection.doc(document.id).update({
+                                            'completed': newValue,
+                                            'completedDays': {
+                                              // Update the completedDays map with today's date
+                                              ...completedDays ?? {},
+                                              today: newValue,
+                                            }
+                                          });
+                                        }
+                                      },
+                                      activeColor: Color.fromRGBO(55, 200, 113, 1),
                                     ),
                                     PopupMenuButton(
                                       icon: Icon(
@@ -147,12 +159,7 @@ class _habbit_pageState extends State<habbit_page> {
                                           value: 1,
                                           child: TextButton(
                                             onPressed: () {
-                                              UpdateFirestore(
-                                                document.id,
-                                                _yourHabit.text.toString(),
-                                                data['period'],
-                                                data['Habbit type'],
-                                              );
+
                                             },
                                             child: Text('Edit'),
                                           ),
@@ -161,13 +168,13 @@ class _habbit_pageState extends State<habbit_page> {
                                           value: 2,
                                           child: TextButton(
                                             onPressed: () {
-                                              deleteGoal(document.id);
+                                              // Delete functionality
                                             },
                                             child: Text('Delete'),
                                           ),
                                         ),
                                       ],
-                                    )
+                                    ),
                                   ],
                                 ),
                               ],
@@ -183,6 +190,7 @@ class _habbit_pageState extends State<habbit_page> {
           ),
 
 
+
           SizedBox(
             height: 10,
           ),
@@ -190,7 +198,6 @@ class _habbit_pageState extends State<habbit_page> {
       ),
     );
   }
-
   Future NewGoal() => showDialog(
         context: context,
         builder: (context) => AlertDialog(
