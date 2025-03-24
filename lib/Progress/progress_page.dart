@@ -69,6 +69,7 @@ class _progresssState extends State<progresss> {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -78,7 +79,7 @@ class _progresssState extends State<progresss> {
               fontFamily: 'Nonito',
               fontSize: 29,
               fontWeight: FontWeight.w700,
-              color: Color.fromRGBO(47, 47, 47, 1)),
+              color: textColor),
         ),
       ),
       body: SingleChildScrollView(
@@ -96,7 +97,7 @@ class _progresssState extends State<progresss> {
                       fontWeight: FontWeight.w700,
                       fontSize: 21,
                       fontFamily: 'Nonito',
-                      color: Color.fromRGBO(47, 47, 47, 1),
+                      color: textColor,
                     ),
                   ),
                   Container(
@@ -160,7 +161,7 @@ class _progresssState extends State<progresss> {
                           fontFamily: 'Nonito',
                           fontSize: 21,
                           fontWeight: FontWeight.w700,
-                          color: Color.fromRGBO(47, 47, 47, 1),
+                          color: textColor,
                         ),
                       ),
                       TextButton(
@@ -331,7 +332,7 @@ class _progresssState extends State<progresss> {
                                                             fontFamily: 'Nonito',
                                                             fontSize: 16,
                                                             fontWeight: FontWeight.w700,
-                                                            color: Color.fromRGBO(47, 47, 47, 1),
+                                                            color: textColor,
                                                           ),
                                                         ),
                                                       ),
@@ -341,7 +342,7 @@ class _progresssState extends State<progresss> {
                                                           fontWeight: FontWeight.w400,
                                                           fontSize: 14,
                                                           fontFamily: 'Nonito',
-                                                          color: Color.fromRGBO(47, 47, 47, 1),
+                                                          color: textColor,
                                                         ),
                                                       ),
                                                     ],

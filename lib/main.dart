@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:new_application/providers/them_provider.dart';
 
 import 'authentication/sign_up.dart';
 import 'firebase_options.dart';
@@ -13,7 +14,16 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => EverydayProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -21,16 +31,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => UserProvider()),
-        ChangeNotifierProvider(create: (context) => EverydayProvider()),
-      ],
-      
-      child: MaterialApp(
-        home: sign_up(),
-        debugShowCheckedModeBanner: false,
-      ),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          home: sign_up(),
+          themeMode: themeProvider.themeMode,
+          theme: themeProvider.lightTheme,
+          darkTheme: themeProvider.darkTheme,
+          debugShowCheckedModeBanner: false,
+        );
+      },
     );
   }
 }

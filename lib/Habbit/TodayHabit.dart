@@ -39,6 +39,7 @@ class _habbit_pageState extends State<habbit_page> {
   }
 
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color;
     return Scaffold(
       body: Column(
         children: [
@@ -58,7 +59,7 @@ class _habbit_pageState extends State<habbit_page> {
                           fontFamily: 'Nonito',
                           fontSize: 21,
                           fontWeight: FontWeight.w700,
-                          color: Color.fromRGBO(47, 47, 47, 1)),
+                          color: textColor),
                     ),
                   ],
                 ),
@@ -83,6 +84,13 @@ class _habbit_pageState extends State<habbit_page> {
                   return Center(child: Text('No habits found.'));
                 }
 
+                final theme = Theme.of(context);
+                final textColor = theme.textTheme.bodyLarge?.color ?? Colors.black;
+                final backgroundColor = theme.cardColor; // Adapts to dark/light mode
+                final completedColor = theme.brightness == Brightness.dark
+                    ? Colors.green[900] // Dark green for dark mode
+                    : Color.fromRGBO(237, 255, 244, 1); // Light green for light mode
+
                 var everydayHabits = snapshot.data!.docs.where((document) {
                   Map<String, dynamic> data = document.data() as Map<String, dynamic>;
                   return data['Habit type'] == 'Everyday';
@@ -92,14 +100,11 @@ class _habbit_pageState extends State<habbit_page> {
                   return Center(child: Text('No everyday habits found.'));
                 }
 
-
                 String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
                 return ListView(
                   children: everydayHabits.map((DocumentSnapshot document) {
                     Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-
-
                     Map<String, dynamic>? completedDays = data['completedDays'];
                     bool isCompleted = completedDays != null && completedDays.containsKey(today);
 
@@ -110,9 +115,7 @@ class _habbit_pageState extends State<habbit_page> {
                         width: 500,
                         height: 70,
                         child: Card(
-                          color: isCompleted
-                              ? Color.fromRGBO(237, 255, 244, 1)
-                              : Colors.white70,
+                          color: isCompleted ? completedColor : backgroundColor, // Dynamic color
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -127,7 +130,7 @@ class _habbit_pageState extends State<habbit_page> {
                                     fontFamily: 'Nonito',
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
-                                    color: Color.fromRGBO(55, 200, 113, 1),
+                                    color: textColor, // Adaptive text color
                                   ),
                                 ),
                                 Row(
@@ -139,19 +142,18 @@ class _habbit_pageState extends State<habbit_page> {
                                           habitsCollection.doc(document.id).update({
                                             'completed': newValue,
                                             'completedDays': {
-                                              // Update the completedDays map with today's date
                                               ...completedDays ?? {},
                                               today: newValue,
                                             }
                                           });
                                         }
                                       },
-                                      activeColor: Color.fromRGBO(55, 200, 113, 1),
+                                      activeColor: theme.colorScheme.primary, // Adaptive check color
                                     ),
                                     PopupMenuButton(
                                       icon: Icon(
                                         Icons.more_vert,
-                                        color: Color.fromRGBO(102, 102, 102, 1),
+                                        color: textColor, // Adaptive icon color
                                       ),
                                       itemBuilder: (BuildContext context) =>
                                       <PopupMenuEntry<int>>[
@@ -159,9 +161,9 @@ class _habbit_pageState extends State<habbit_page> {
                                           value: 1,
                                           child: TextButton(
                                             onPressed: () {
-
+                                              // Edit functionality
                                             },
-                                            child: Text('Edit'),
+                                            child: Text('Edit', style: TextStyle(color: textColor)),
                                           ),
                                         ),
                                         PopupMenuItem<int>(
@@ -170,7 +172,7 @@ class _habbit_pageState extends State<habbit_page> {
                                             onPressed: () {
                                               // Delete functionality
                                             },
-                                            child: Text('Delete'),
+                                            child: Text('Delete', style: TextStyle(color: textColor)),
                                           ),
                                         ),
                                       ],
@@ -188,8 +190,6 @@ class _habbit_pageState extends State<habbit_page> {
               },
             ),
           ),
-
-
 
           SizedBox(
             height: 10,

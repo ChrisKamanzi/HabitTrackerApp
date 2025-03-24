@@ -53,7 +53,7 @@ class _homepageState extends State<homepage> {
     String username;
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('EEEE, dd MMMM yyyy').format(now);
-
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color;
     final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
@@ -77,7 +77,7 @@ class _homepageState extends State<homepage> {
                       fontFamily: 'Nonito',
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
-                      color: Color.fromRGBO(47, 47, 47, 1),
+                      color: textColor,
                     ),
                     children: <TextSpan>[
                       TextSpan(
@@ -212,17 +212,14 @@ class _homepageState extends State<homepage> {
                 height: 320,
                 child: Card(
                   elevation: 2,
-                  color: Color.fromRGBO(255, 255, 255, 1),
+                  color: Theme.of(context).cardColor, // Adaptive background
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.only(
-                          top: 10,
-                          left: 10,
-                        ),
+                        padding: EdgeInsets.only(top: 10, left: 10),
                         child: Padding(
                           padding: const EdgeInsets.only(left: 2, right: 10),
                           child: Row(
@@ -234,7 +231,7 @@ class _homepageState extends State<homepage> {
                                   fontFamily: 'Nonito',
                                   fontSize: 21,
                                   fontWeight: FontWeight.w700,
-                                  color: Color.fromRGBO(47, 47, 47, 1),
+                                  color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                                 ),
                               ),
                               TextButton(
@@ -246,12 +243,12 @@ class _homepageState extends State<homepage> {
                                 },
                                 child: ShaderMask(
                                   shaderCallback: (bounds) => LinearGradient(
-                                          colors: <Color>[
+                                      colors: <Color>[
                                         Color.fromRGBO(255, 164, 80, 1),
                                         Color.fromRGBO(255, 92, 0, 1)
                                       ],
-                                          begin: Alignment.bottomLeft,
-                                          end: Alignment.centerRight)
+                                      begin: Alignment.bottomLeft,
+                                      end: Alignment.centerRight)
                                       .createShader(bounds),
                                   child: Text(
                                     'See all',
@@ -284,6 +281,13 @@ class _homepageState extends State<homepage> {
                               return Center(child: Text('No habits found.'));
                             }
 
+                            final theme = Theme.of(context);
+                            final textColor = theme.textTheme.bodyLarge?.color ?? Colors.black;
+                            final backgroundColor = theme.cardColor; // Adaptive background
+                            final completedColor = theme.brightness == Brightness.dark
+                                ? Colors.green[900]
+                                : Color.fromRGBO(237, 255, 244, 1);
+
                             var everydayHabits = snapshot.data!.docs.where((document) {
                               Map<String, dynamic> data = document.data() as Map<String, dynamic>;
                               return data['Habit type'] == 'Everyday';
@@ -293,14 +297,11 @@ class _homepageState extends State<homepage> {
                               return Center(child: Text('No everyday habits found.'));
                             }
 
-
                             String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
                             return ListView(
                               children: everydayHabits.take(3).map((DocumentSnapshot document) {
                                 Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-
-
                                 Map<String, dynamic>? completedDays = data['completedDays'];
                                 bool isCompleted = completedDays != null && completedDays.containsKey(today);
 
@@ -311,9 +312,7 @@ class _homepageState extends State<homepage> {
                                     width: 500,
                                     height: 70,
                                     child: Card(
-                                      color: isCompleted
-                                          ? Color.fromRGBO(237, 255, 244, 1)
-                                          : Colors.white70,
+                                      color: isCompleted ? completedColor : backgroundColor,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(5),
                                       ),
@@ -328,7 +327,7 @@ class _homepageState extends State<homepage> {
                                                 fontFamily: 'Nonito',
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600,
-                                                color: Color.fromRGBO(55, 200, 113, 1),
+                                                color: textColor,
                                               ),
                                             ),
                                             Row(
@@ -340,19 +339,18 @@ class _homepageState extends State<homepage> {
                                                       habitsCollection.doc(document.id).update({
                                                         'completed': newValue,
                                                         'completedDays': {
-                                                          // Update the completedDays map with today's date
                                                           ...completedDays ?? {},
                                                           today: newValue,
                                                         }
                                                       });
                                                     }
                                                   },
-                                                  activeColor: Color.fromRGBO(55, 200, 113, 1),
+                                                  activeColor: theme.colorScheme.primary,
                                                 ),
                                                 PopupMenuButton(
                                                   icon: Icon(
                                                     Icons.more_vert,
-                                                    color: Color.fromRGBO(102, 102, 102, 1),
+                                                    color: textColor,
                                                   ),
                                                   itemBuilder: (BuildContext context) =>
                                                   <PopupMenuEntry<int>>[
@@ -360,9 +358,9 @@ class _homepageState extends State<homepage> {
                                                       value: 1,
                                                       child: TextButton(
                                                         onPressed: () {
-
+                                                          // Edit functionality
                                                         },
-                                                        child: Text('Edit'),
+                                                        child: Text('Edit', style: TextStyle(color: textColor)),
                                                       ),
                                                     ),
                                                     PopupMenuItem<int>(
@@ -371,7 +369,7 @@ class _homepageState extends State<homepage> {
                                                         onPressed: () {
                                                           // Delete functionality
                                                         },
-                                                        child: Text('Delete'),
+                                                        child: Text('Delete', style: TextStyle(color: textColor)),
                                                       ),
                                                     ),
                                                   ],
@@ -389,188 +387,185 @@ class _homepageState extends State<homepage> {
                           },
                         ),
                       ),
-
-                      SizedBox(
-                        height: 10,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      SizedBox(height: 10),
                     ],
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 4,
-                right: 5,
-              ),
-              child: SizedBox(
-                height: 450,
-                child: Card(
-                  elevation: 2,
-                  color: Color.fromRGBO(255, 255, 255, 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Column(
-                    children: [
 
+            SizedBox(height: 10),
+      Padding(
+        padding: const EdgeInsets.only(
+          left: 4,
+          right: 5,
+        ),
+        child: SizedBox(
+          height: 450,
+          child: Card(
+            elevation: 2,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey[850] // Dark mode color
+                : Colors.white, // Light mode color
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 10, right: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 10),
-                              child: Text(
-                                'Your Goals',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 21,
-                                    fontFamily: 'Nonito',
-                                    color: Color.fromRGBO(47, 47, 47, 1)),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => goal()
-                                      )
-                                  );
-                                },
-                                child: Text(
-                                  'See all',
-                                  style: TextStyle(
-                                      fontFamily: 'Nonito',
-                                      fontSize: 14,
-                                      color: Color.fromRGBO(255, 164, 80, 1),
-                                      fontWeight: FontWeight.w700),
-                                ),
-                              ),
-                            ),
-                          ],
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Text(
+                          'Your Goals',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 21,
+                            fontFamily: 'Nonito',
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white // Text color in dark mode
+                                : Color.fromRGBO(47, 47, 47, 1),
+                          ),
                         ),
                       ),
-                      Expanded(
-                        child: StreamBuilder(
-                          stream: FirebaseFirestore.instance.collection('Goal').snapshots(),
-                          builder: (context, AsyncSnapshot<QuerySnapshot> goalSnapshot) {
-                            return ListView(
-                              children: goalSnapshot.data!.docs.take(3).map((goalDoc) {
-                                var goalData = goalDoc.data() as Map<String, dynamic>;
-                                String goalTitle = goalData['Goal'];
-                                String? selectedHabit = goalData['selecedHabit'];
-
-                                if (selectedHabit == null || selectedHabit.isEmpty) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Text("No habit assigned for this goal"),
-                                  );
-                                }
-
-                                return StreamBuilder<QuerySnapshot>(
-                                  stream: FirebaseFirestore.instance
-                                      .collection('Habits')
-                                      .where('Habit', isEqualTo: selectedHabit)
-                                      .snapshots(),
-                                  builder: (context, habitSnapshot) {
-                                    if (habitSnapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      print('loading');
-                                    }
-                                    if (!habitSnapshot.hasData ||
-                                        habitSnapshot.data!.docs.isEmpty) {
-                                      return Text(
-                                          "Habit data not found for $selectedHabit");
-                                    }
-                                    var habitData = habitSnapshot.data!.docs.first.data()
-                                    as Map<String, dynamic>;
-
-                                    Map<String, dynamic> completedDaysMap =
-                                        habitData['completedDays'] ?? {};
-                                    List<String> completedDates =
-                                    completedDaysMap.keys.toList();
-
-                                    DateTime now = DateTime.now();
-                                    DateTime thirtyDaysAgo =
-                                    now.subtract(Duration(days: 30));
-
-                                    int completedDays = completedDates
-                                        .map((date) => DateTime.parse(date))
-                                        .where((date) => date.isAfter(thirtyDaysAgo))
-                                        .length;
-
-                                    double progress = completedDays / 30;
-
-                                    return Padding(
-                                      padding: EdgeInsets.only(left: 10,right: 10, top: 10),
-                                      child: Card(
-                                        elevation: 2,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(10)),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(goalTitle,
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 16
-                                                  )
-                                              ),
-                                              SizedBox(height: 5),
-                                              Container(
-                                                width: 370,
-                                                height: 20,
-                                                child: LinearProgressIndicator(
-                                                  value: progress,
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  backgroundColor:
-                                                  Color.fromRGBO(231, 231, 231, 1),
-                                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                                      Color.fromRGBO(255, 92, 0, 1)),
-                                                ),
-                                              ),
-                                              SizedBox(height: 5),
-                                              Text(
-                                                "Completed $completedDays out of 30 days",
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontFamily: 'Nonito',
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-
-                                              ),
-                                              SizedBox(height: 5),
-                                              Text('$_selected',
-                                                  style: TextStyle(
-                                                      color: Color.fromRGBO(255, 92, 0, 1),
-                                                      fontWeight: FontWeight.w500)),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              }).toList(),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => goal()),
                             );
                           },
+                          child: Text(
+                            'See all',
+                            style: TextStyle(
+                              fontFamily: 'Nonito',
+                              fontSize: 14,
+                              color: Color.fromRGBO(255, 164, 80, 1),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
+                Expanded(
+                  child: StreamBuilder(
+                    stream: FirebaseFirestore.instance.collection('Goal').snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> goalSnapshot) {
+                      if (goalSnapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      return ListView(
+                        children: goalSnapshot.data!.docs.take(3).map((goalDoc) {
+                          var goalData = goalDoc.data() as Map<String, dynamic>;
+                          String goalTitle = goalData['Goal'];
+                          String? selectedHabit = goalData['selecedHabit'];
+
+                          if (selectedHabit == null || selectedHabit.isEmpty) {
+                            return Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Text("No habit assigned for this goal"),
+                            );
+                          }
+
+                          return StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('Habits')
+                                .where('Habit', isEqualTo: selectedHabit)
+                                .snapshots(),
+                            builder: (context, habitSnapshot) {
+                              if (habitSnapshot.connectionState == ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
+                              }
+                              if (!habitSnapshot.hasData || habitSnapshot.data!.docs.isEmpty) {
+                                return Text("Habit data not found for $selectedHabit");
+                              }
+                              var habitData = habitSnapshot.data!.docs.first.data()
+                              as Map<String, dynamic>;
+
+                              Map<String, dynamic> completedDaysMap = habitData['completedDays'] ?? {};
+                              List<String> completedDates = completedDaysMap.keys.toList();
+
+                              DateTime now = DateTime.now();
+                              DateTime thirtyDaysAgo = now.subtract(Duration(days: 30));
+
+                              int completedDays = completedDates
+                                  .map((date) => DateTime.parse(date))
+                                  .where((date) => date.isAfter(thirtyDaysAgo))
+                                  .length;
+
+                              double progress = completedDays / 30;
+
+                              return Padding(
+                                padding: EdgeInsets.only(left: 10, right: 10, top: 10),
+                                child: Card(
+                                  elevation: 2,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          goalTitle,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Container(
+                                          width: 370,
+                                          height: 20,
+                                          child: LinearProgressIndicator(
+                                            value: progress,
+                                            borderRadius: BorderRadius.circular(10),
+                                            backgroundColor:
+                                            Color.fromRGBO(231, 231, 231, 1),
+                                            valueColor: AlwaysStoppedAnimation<Color>(
+                                                Color.fromRGBO(255, 92, 0, 1)),
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          "Completed $completedDays out of 30 days",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: 'Nonito',
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          '$_selected',
+                                          style: TextStyle(
+                                              color: Color.fromRGBO(255, 92, 0, 1),
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
+          ),
+        ),
+      )
           ],
         ),
       ),
