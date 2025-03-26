@@ -1,42 +1,76 @@
-import 'dart:convert';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'newPassword.dart';
 
 class otp extends StatefulWidget {
-  final String email;
+  final String? email;
 
-  const otp({super.key, required this.email});
+  const otp({super.key, this.email});
 
   @override
-  State<otp> createState() => otpState();
+  State<otp> createState() => _OTPState();
 }
 
-class otpState extends State<otp> {
+class _OTPState extends State<otp> {
   EmailOTP myAuth = EmailOTP();
   String otpCode = "";
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.email != null) {
+      myAuth.setConfig(
+        appEmail: "admin@HabitTracker.com",
+        appName: "Habit Tracker",
+        userEmail: widget.email!,
+        otpLength: 6,
+        otpType: OTPType.digitsOnly,
+      );
+      sendOtp(); // Automatically send OTP when screen opens
+    }
+  }
+
+  Future<void> sendOtp() async {
+    if (widget.email == null) {
+      print("Email is null. Cannot send OTP.");
+      return;
+    }
+
+    bool otpSent = await myAuth.sendOTP();
+
+    if (otpSent) {
+      print("OTP sent successfully to ${widget.email}");
+    } else {
+      print("Failed to send OTP");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to send OTP. Please try again.")),
+      );
+    }
+  }
+
   Future<void> verifyOtp() async {
+    otpCode = otpCode.trim(); // Ensure no extra spaces
+
     if (otpCode.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please enter a 6-digit OTP")),
+        SnackBar(content: Text("Please enter a valid 6-digit OTP.")),
       );
       return;
     }
 
-    bool isValid = await myAuth.verifyOTP(
-      otp: otpCode,
-    );
+    print("Entered OTP: $otpCode");
+
+    bool isValid = await myAuth.verifyOTP(otp: otpCode);
 
     if (isValid) {
-      print("OTP Success ");
+      print("OTP verified successfully!");
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => newPass()),
+        MaterialPageRoute(builder: (context) => newPass())//email: widget.email!, oobCode: otpCode,)),
       );
     } else {
-      print("OTP failed ");
+      print("OTP verification failed!");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Invalid OTP. Please try again.")),
       );
@@ -54,7 +88,7 @@ class otpState extends State<otp> {
             Padding(
               padding: const EdgeInsets.only(left: 20),
               child: Text(
-                'Enter OTP code we’ve sent to your email',
+                'Enter the OTP code sent to your email',
                 style: TextStyle(
                   fontFamily: 'Nunito',
                   fontWeight: FontWeight.w600,
@@ -65,7 +99,7 @@ class otpState extends State<otp> {
             ),
             SizedBox(height: 40),
             OtpTextField(
-              fieldWidth: 45,
+              fieldWidth: 40,
               numberOfFields: 6,
               borderColor: Colors.grey,
               showFieldAsBox: true,
@@ -98,9 +132,7 @@ class otpState extends State<otp> {
                 height: 50,
                 width: 340,
                 child: ElevatedButton(
-                  onPressed: () {
-                    verifyOtp();
-                  },
+                  onPressed: verifyOtp,
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
                     shadowColor: Colors.transparent,
