@@ -3,14 +3,13 @@ import 'package:new_application/Settings/Theme.dart';
 import '../Home/home.dart';
 import '../Progress/progress_page.dart';
 import 'Account_page.dart';
-
+import 'package:go_router/go_router.dart';
 class settings extends StatelessWidget {
   const settings({super.key});
 
   @override
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).textTheme.bodyLarge?.color;
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -20,8 +19,7 @@ class settings extends StatelessWidget {
               fontFamily: 'Nonito',
               fontWeight: FontWeight.w700,
               fontSize: 29,
-              color: textColor
-          ),
+              color: textColor),
         ),
       ),
       body: SingleChildScrollView(
@@ -30,8 +28,8 @@ class settings extends StatelessWidget {
           child: Card(
             color: Colors.white,
             child: Padding(
-              padding:
-                  const EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 10),
+              padding: const EdgeInsets.only(
+                  left: 20, right: 20, bottom: 20, top: 10),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -54,8 +52,7 @@ class settings extends StatelessWidget {
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   fontFamily: 'Nonito',
-                                  color: textColor
-                              ),
+                                  color: textColor),
                             ),
                           ),
                           Padding(
@@ -83,8 +80,7 @@ class settings extends StatelessWidget {
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
                                     color: textColor),
-                              )
-                          ),
+                              )),
                           Padding(
                             padding: const EdgeInsets.all(10),
                             child: Icon(Icons.keyboard_arrow_right),
@@ -98,8 +94,11 @@ class settings extends StatelessWidget {
                     width: 422,
                     height: 58,
                     child: GestureDetector(
-                      onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ThemePage()));
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ThemePage()));
                       },
                       child: Card(
                         child: Row(
@@ -135,10 +134,7 @@ class settings extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
             icon: IconButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => homepage()));
-              },
+              onPressed: () => context.go('/homepage'),
               icon: Icon(
                 Icons.home,
               ),
@@ -146,19 +142,13 @@ class settings extends StatelessWidget {
             label: ''),
         BottomNavigationBarItem(
             icon: IconButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => progresss()));
-                             },
+              onPressed: () => context.go('/progress'),
               icon: Icon(Icons.trending_up_outlined),
             ),
             label: ''),
         BottomNavigationBarItem(
             icon: IconButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => settings()));
-              },
+              onPressed: () => context.go('/settings'),
               icon: Icon(Icons.settings),
             ),
             label: '')

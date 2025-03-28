@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class UserProvider with ChangeNotifier {
   String? _username;
-
   String? get username => _username;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;

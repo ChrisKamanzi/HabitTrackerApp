@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import '../Habbit/goals.dart';
 import '../Home/home.dart';
 import '../Settings/Settings_page.dart';
 import 'Goals_progress.dart';
-
+import 'package:go_router/go_router.dart';
 class progresss extends StatefulWidget {
   const progresss({super.key});
 
@@ -427,10 +428,7 @@ class _progresssState extends State<progresss> {
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
                 icon: IconButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => homepage()));
-                  },
+                  onPressed: () => context.go('/homepage'),
                   icon: Icon(
                     Icons.home,
                   ),
@@ -438,19 +436,13 @@ class _progresssState extends State<progresss> {
                 label: ''),
             BottomNavigationBarItem(
                 icon: IconButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => progresss()));
-                  },
+                  onPressed: () => context.go('/progress'),
                   icon: Icon(Icons.trending_up_outlined),
                 ),
                 label: ''),
             BottomNavigationBarItem(
                 icon: IconButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => settings()));
-                  },
+                  onPressed: () => context.go('/settings'),
                   icon: Icon(Icons.settings),
                 ),
                 label: '')
