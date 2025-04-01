@@ -3,12 +3,14 @@ import 'package:new_application/Progress/progress_page.dart';
 import 'package:new_application/Settings/Settings_page.dart';
 import 'package:new_application/authentication/login.dart';
 import 'package:new_application/Home/home.dart';
+
 import 'package:new_application/authentication/sign_up.dart';
 import 'package:new_application/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:new_application/providers/them_provider.dart';
+import 'package:new_application/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,14 +25,19 @@ void main() async {
 }
 
 class MyApp extends ConsumerWidget {
-  const MyApp({super.key}
-      );
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final GoRouter _router = GoRouter(
-      initialLocation: '/',
+      initialLocation: '/splash',
       routes: [
+        GoRoute(
+          path: '/splash',
+          builder: (BuildContext context, GoRouterState state) {
+            return SplashScreen();
+          },
+        ),
         GoRoute(
           path: '/',
           builder: (BuildContext context, GoRouterState state) {
