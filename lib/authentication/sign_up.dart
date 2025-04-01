@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:go_router/go_router.dart';
 import 'login.dart';
 
 class sign_up extends StatefulWidget {
@@ -12,7 +12,6 @@ class sign_up extends StatefulWidget {
 }
 
 class _sign_upState extends State<sign_up> {
-
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passController = TextEditingController();
   TextEditingController _confirmController = TextEditingController();
@@ -30,17 +29,15 @@ class _sign_upState extends State<sign_up> {
 
   Future<void> signIn() async {
     try {
-
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passController.text.trim(),
       );
 
-
       User? user = userCredential.user;
 
       if (user != null) {
-
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'username': _usernameController.text.trim(),
           'email': user.email,
@@ -51,68 +48,32 @@ class _sign_upState extends State<sign_up> {
 
         if (!mounted) return;
 
-        // Navigate to login screen
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => login()),
-        );
+        context.go('/login');
       }
     } catch (e) {
       print("Error: $e"); // Print error for debugging
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: Text(
-            'Sign Up',
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 44,
-              color: Color.fromRGBO(47, 47, 47, 1),
-            ),
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 25),
-            child: TextButton(
-              onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => login()));
-              },
-              child: Row(
-                children: [
-                  Text(
-                    'Log in',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: Color.fromRGBO(255, 92, 0, 1),
-                    ),
-                  ),
-                  Icon(
-                    Icons.keyboard_arrow_right,
-                    color: Color.fromRGBO(255, 92, 0, 1),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Padding(
-          padding: const EdgeInsets.all(40),
+          padding: const EdgeInsets.only(top: 70,left: 40, right: 40),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                'Sign Up',
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 44,
+                  color: Color.fromRGBO(47, 47, 47, 1),
+                ),
+              ),
+              SizedBox(height: 30,),
               Text(
                 'Name',
                 style: TextStyle(
@@ -241,13 +202,33 @@ class _sign_upState extends State<sign_up> {
                 ),
               ),
               SizedBox(height: 30),
-              Center(
-                child: Text(
-                  'Or sign up With:',
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Color.fromRGBO(127, 127, 127, 1)),
+              Padding(
+                padding: const EdgeInsets.only(left: 50),
+                child: Row(
+                  children: [
+                    Center(
+                      child: Text(
+                        'Already have an account?',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Nonito',
+                            fontWeight: FontWeight.w400,
+                            color: Color.fromRGBO(127, 127, 127, 1)),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => context.go('/login'),
+                      child: Text(
+                        'Log in',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: 'Nonito',
+                          fontWeight: FontWeight.w800,
+                          color: Color.fromRGBO(255, 92, 0, 1),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ),
             ],

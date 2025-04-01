@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/them_provider.dart';
 
-class ThemePage extends StatelessWidget {
+class ThemePage extends ConsumerWidget {
   const ThemePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text("Theme Switcher")),
@@ -22,14 +22,16 @@ class ThemePage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                themeProvider.toggleTheme(false);
+
+                ref.read(themeProvider.notifier).toggleTheme(false);
               },
               child: const Text("Bright Mode"),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                themeProvider.toggleTheme(true); // Switch to Dark Mode
+                print("Toggling Dark Mode");
+                ref.read(themeProvider.notifier).toggleTheme(true);
               },
               child: const Text("Dark Mode"),
             ),

@@ -1,15 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class UserProvider with ChangeNotifier {
-  String? _username;
-  String? get username => _username;
-
+class UserNotifier extends StateNotifier<String?> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  UserProvider() {
+  UserNotifier() : super(null) {
     _fetchUsername();
   }
 
@@ -17,9 +14,8 @@ class UserProvider with ChangeNotifier {
     User? user = _auth.currentUser;
     if (user != null) {
       DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
-      _username = userDoc['username'];
-      notifyListeners();
+      await _firestore.collection('users').doc(user.uid).get();
+      state = userDoc['username'] as String?;
     }
   }
 
@@ -27,3 +23,7 @@ class UserProvider with ChangeNotifier {
     await _fetchUsername();
   }
 }
+
+final userProvider = StateNotifierProvider<UserNotifier, String?>((ref) {
+  return UserNotifier();
+});

@@ -25,8 +25,6 @@ class _forgotPasswordState extends State<forgotPassword> {
     );
 
     bool result = await otpNumber.sendOTP();
-
-
     if (result) {
       print('OTP sent successfully to $email');
     } else {

@@ -1,24 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/habit_model.dart';
 
-class EverydayProvider extends ChangeNotifier {
-  List<Habit> _everydayHabits = [];
+class EverydayHabitsNotifier extends StateNotifier<List<Habit>> {
+  EverydayHabitsNotifier() : super([]);
 
-  List<Habit> get everydayHabits => _everydayHabits;
-
-  Future<void> FetchEveryDay() async {
+  Future<void> fetchEverydayHabits() async {
     try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection(
-          'Habits').where('period', isEqualTo: 'Everyday').get();
-      _everydayHabits = snapshot.docs
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Habits')
+          .where('period', isEqualTo: 'Everyday')
+          .get();
+      state = snapshot.docs
           .map((doc) => Habit.fromFirestore(doc.data() as Map<String, dynamic>))
           .toList();
-      notifyListeners();
     } catch (error) {
       print(error);
     }
   }
 }
+
+final everydayHabitsProvider =
+    StateNotifierProvider<EverydayHabitsNotifier, List<Habit>>((ref) {
+  return EverydayHabitsNotifier();
+});

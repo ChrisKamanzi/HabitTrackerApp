@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import '../Habbit/YourHabits.dart';
@@ -11,21 +12,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
-class homepage extends StatefulWidget {
+class homepage extends ConsumerStatefulWidget {
   const homepage({super.key});
 
   @override
-  State<homepage> createState() => _homepageState();
+  ConsumerState<homepage> createState() => _homepageState();
 }
 
-class _homepageState extends State<homepage> {
+class _homepageState extends ConsumerState<homepage> {
   TextEditingController _yourHabit = TextEditingController();
   String? _selected;
   String? habbitType;
   var selectedValue;
 
   final CollectionReference habitsCollection =
-      FirebaseFirestore.instance.collection('Habits');
+  FirebaseFirestore.instance.collection('Habits');
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
@@ -42,20 +43,21 @@ class _homepageState extends State<homepage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _selected = '1 month(30 days)';
     habbitType = 'Everyday';
   }
 
   @override
+
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
-    String username;
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('EEEE, dd MMMM yyyy').format(now);
     final textColor = Theme.of(context).textTheme.bodyLarge?.color;
-    final userProvider = Provider.of<UserProvider>(context);
+    final userState = ref.watch(userProvider);
+    final username = ref.watch(userProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -65,10 +67,17 @@ class _homepageState extends State<homepage> {
           textAlign: TextAlign.start,
         ),
       ),
+      drawer: Drawer(
+        child: TextButton(onPressed: ()=> context.go('/login'),
+            child: Text('Logout')),
+      ),
+
       body: SingleChildScrollView(
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             Padding(
               padding: const EdgeInsets.only(left: 10, top: 20),
               child: RichText(
@@ -82,14 +91,16 @@ class _homepageState extends State<homepage> {
                     ),
                     children: <TextSpan>[
                       TextSpan(
-                          text: '${userProvider.username}!',
+                          text: username ,
                           style: TextStyle(
                             fontSize: 28,
                             fontFamily: 'Nonito',
                             fontWeight: FontWeight.w700,
                             color: Color.fromRGBO(255, 164, 80, 1),
-                          ))
-                    ]),
+                          )
+                      )
+                    ]
+                ),
               ),
             ),
             SizedBox(height: 30),
