@@ -59,7 +59,8 @@ class _habbit_pageState extends State<habbit_page> {
                           fontFamily: 'Nonito',
                           fontSize: 21,
                           fontWeight: FontWeight.w700,
-                          color: textColor),
+                         // color: textColor
+                      ),
                     ),
                   ],
                 ),

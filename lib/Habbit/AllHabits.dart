@@ -53,7 +53,8 @@ class _habbit_pageState extends State<allhabbit> {
                           fontFamily: 'Nonito',
                           fontSize: 21,
                           fontWeight: FontWeight.w700,
-                          color: Color.fromRGBO(47, 47, 47, 1)),
+                        //  color: Color.fromRGBO(47, 47, 47, 1)
+                      ),
                     ),
                   ],
                 ),

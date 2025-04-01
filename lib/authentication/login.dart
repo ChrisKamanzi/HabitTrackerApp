@@ -1,80 +1,68 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../Home/home.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../providers/auth_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'forgot_password.dart';
 import 'package:go_router/go_router.dart';
+import 'forgot_password.dart';
 import 'sign_up.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
-class login extends StatefulWidget {
+class login extends ConsumerStatefulWidget {
   const login({super.key});
 
   @override
-  State<login> createState() => _LoginState();
+  ConsumerState<login> createState() => _LoginState();
 }
 
-class _LoginState extends State<login> {
-  bool _isChecked = false;
-  bool _isLoading = false;
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passController = TextEditingController();
+class _LoginState extends ConsumerState<login> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passController = TextEditingController();
 
-  Future<void> Login() async {
-    setState(() {
-      _isLoading = true;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
 
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passController.text.trim());
+  Future<void> _loadSavedCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? isLoggedIn = prefs.getBool('isLoggedIn');
+    String? savedEmail = prefs.getString('userEmail');
 
-      if (_isChecked) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isLoggedIn', true);
-        await prefs.setString('userEmail', userCredential.user?.email ?? '');
-        print('saved');
-      }
-      context.go('/homepage');
-    } catch (e) {
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+    if (isLoggedIn == true && savedEmail != null) {
+      _emailController.text = savedEmail;
+      ref.read(rememberMeProvider.notifier).state = true;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(authProvider);
+    final isChecked = ref.watch(rememberMeProvider);
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 50),
         child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
           child: Padding(
             padding: const EdgeInsets.all(40),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 AnimatedTextKit(
                   animatedTexts: [
                     WavyAnimatedText(
                       'Login',
                       textStyle: TextStyle(
-                        fontFamily: 'Nunito', // Fixed the font name typo
+                        fontFamily: 'Nunito',
                         fontSize: 44,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
                 ),
-
-                SizedBox(
-                  height: 30,
-                ),
+                SizedBox(height: 30),
                 Text(
                   'Email',
                   style: TextStyle(
@@ -84,18 +72,14 @@ class _LoginState extends State<login> {
                     color: Color.fromRGBO(102, 102, 102, 1),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
-                SizedBox(
-                  height: 50,
-                  child: TextField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.email),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        )),
+                SizedBox(height: 20),
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.email),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
                 ),
                 SizedBox(height: 20),
@@ -109,120 +93,111 @@ class _LoginState extends State<login> {
                   ),
                 ),
                 SizedBox(height: 20),
-                SizedBox(
-                  height: 50,
-                  child: TextField(
-                    controller: _passController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        )),
+                TextField(
+                  controller: _passController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.lock),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
                 ),
                 SizedBox(height: 20),
                 Row(
                   children: [
                     Checkbox(
-                        value: _isChecked,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            _isChecked = value!;
-                          });
-                        }),
+                      value: isChecked,
+                      onChanged: (bool? value) {
+                        ref.read(rememberMeProvider.notifier).state = value!;
+                      },
+                    ),
                     Text(
                       'Remember Me',
                       style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          fontFamily: 'Nonito',
-                          color: Color.fromRGBO(127, 127, 127, 1)),
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        fontFamily: 'Nonito',
+                        color: Color.fromRGBO(127, 127, 127, 1),
+                      ),
                     ),
-                    SizedBox(
-                      width: 30,
-                    ),
+                    SizedBox(width: 30),
                     TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => forgotPassword()));
-                        },
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                              fontFamily: 'Nonito',
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Color.fromRGBO(255, 92, 0, 1)),
-                        ))
-                  ],
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                _isLoading // Show CircularProgressIndicator if loading
-                    ? Center(child: CircularProgressIndicator())
-                    : SizedBox(
-                        width: 400,
-                        height: 50,
-                        child: Ink(
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: <Color>[
-                                  Color.fromRGBO(255, 164, 80, 1),
-                                  Color.fromRGBO(255, 92, 0, 1),
-                                ],
-                                begin: Alignment.bottomLeft,
-                                end: Alignment.centerRight,
-                              ),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                elevation: 0,
-                                shadowColor: Colors.transparent,
-                                backgroundColor: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4)),
-                              ),
-                              onPressed: Login,
-                              child: Text(
-                                'Login',
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w800,
-                                    fontFamily: 'Nonito',
-                                    color: Color.fromRGBO(251, 251, 251, 1)),
-                              )),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => forgotPassword()),
+                        );
+                      },
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                          fontFamily: 'Nonito',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color.fromRGBO(255, 92, 0, 1),
                         ),
                       ),
+                    )
+                  ],
+                ),
+                SizedBox(height: 30),
+                isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : SizedBox(
+                  width: 400,
+                  height: 50,
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: <Color>[
+                          Color.fromRGBO(255, 164, 80, 1),
+                          Color.fromRGBO(255, 92, 0, 1),
+                        ],
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        shadowColor: Colors.transparent,
+                        backgroundColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4)),
+                      ),
+                      onPressed: () async {
+                        await ref.read(authProvider.notifier).login(
+                          _emailController.text.trim(),
+                          _passController.text.trim(),
+                          isChecked,
+                        );
+                        context.go('/homepage');
+                      },
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          fontFamily: 'Nonito',
+                          color: Color.fromRGBO(251, 251, 251, 1),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 SizedBox(height: 40),
                 Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 40),
-                    child: Row(
-                      children: [
-                        Text(
-                          'You dont have an account:?',
-                          style: TextStyle(
-                            fontFamily: 'Nonito',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color.fromRGBO(127, 127, 127, 1),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => context.go('/signUp'),
-                         child: Text( 'Sign Up',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Nonito',
-                              fontWeight: FontWeight.w800,
-                              color: Color.fromRGBO(255, 92, 0, 1)),
-                        ) ),
-                      ],
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("You don’t have an account?"),
+                      TextButton(
+                        onPressed: () => context.go('/signUp'),
+                        child: Text('Sign Up'),
+                      ),
+                    ],
                   ),
                 ),
               ],

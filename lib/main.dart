@@ -3,7 +3,6 @@ import 'package:new_application/Progress/progress_page.dart';
 import 'package:new_application/Settings/Settings_page.dart';
 import 'package:new_application/authentication/login.dart';
 import 'package:new_application/Home/home.dart';
-
 import 'package:new_application/authentication/sign_up.dart';
 import 'package:new_application/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,53 +28,6 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final GoRouter _router = GoRouter(
-      initialLocation: '/splash',
-      routes: [
-        GoRoute(
-          path: '/splash',
-          builder: (BuildContext context, GoRouterState state) {
-            return SplashScreen();
-          },
-        ),
-        GoRoute(
-          path: '/',
-          builder: (BuildContext context, GoRouterState state) {
-            return login();
-          },
-        ),
-        GoRoute(
-          path: '/homepage',
-          builder: (BuildContext context, GoRouterState state) {
-            return homepage();
-          },
-        ),
-        GoRoute(
-          path: '/progress',
-          builder: (BuildContext context, GoRouterState state) {
-            return progresss();
-          },
-        ),
-        GoRoute(
-          path: '/settings',
-          builder: (BuildContext context, GoRouterState state) {
-            return settings();
-          },
-        ),
-        GoRoute(
-          path: '/login',
-          builder: (BuildContext context, GoRouterState state) {
-            return login();
-          },
-        ),
-        GoRoute(
-          path: '/signUp',
-          builder: (BuildContext context, GoRouterState state) {
-            return sign_up();
-          },
-        ),
-      ],
-    );
 
     final themeMode = ref.watch(themeProvider);
     return MaterialApp.router(
@@ -87,3 +39,52 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
+
+final GoRouter _router = GoRouter(
+  initialLocation: '/splash',
+  routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (BuildContext context, GoRouterState state) {
+        return SplashScreen();
+      },
+    ),
+    GoRoute(
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) {
+        return login();
+      },
+    ),
+    GoRoute(
+      path: '/homepage',
+      builder: (BuildContext context, GoRouterState state) {
+        return homepage();
+      },
+    ),
+    GoRoute(
+      path: '/progress',
+      builder: (BuildContext context, GoRouterState state) {
+        return progresss();
+      },
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (BuildContext context, GoRouterState state) {
+        return settings();
+      },
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (BuildContext context, GoRouterState state) {
+        return login();
+      },
+    ),
+    GoRoute(
+      path: '/signUp',
+      builder: (BuildContext context, GoRouterState state) {
+        return sign_up();
+      },
+    ),
+  ],
+);
+

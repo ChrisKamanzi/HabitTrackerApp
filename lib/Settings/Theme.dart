@@ -22,8 +22,7 @@ class ThemePage extends ConsumerWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-
-                ref.read(themeProvider.notifier).toggleTheme(false);
+                ref.watch(themeProvider.notifier).toggleTheme(false);
               },
               child: const Text("Bright Mode"),
             ),
@@ -31,7 +30,7 @@ class ThemePage extends ConsumerWidget {
             ElevatedButton(
               onPressed: () {
                 print("Toggling Dark Mode");
-                ref.read(themeProvider.notifier).toggleTheme(true);
+                ref.watch(themeProvider.notifier).toggleTheme(true);
               },
               child: const Text("Dark Mode"),
             ),

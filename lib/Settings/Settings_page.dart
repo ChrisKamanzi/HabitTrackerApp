@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:new_application/Settings/Theme.dart';
-import '../Home/home.dart';
-import '../Progress/progress_page.dart';
+import '../widget.dart';
 import 'Account_page.dart';
-import 'package:go_router/go_router.dart';
 class settings extends StatelessWidget {
   const settings({super.key});
 
@@ -19,7 +17,8 @@ class settings extends StatelessWidget {
               fontFamily: 'Nonito',
               fontWeight: FontWeight.w700,
               fontSize: 29,
-              color: textColor),
+              //color: textColor
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -52,7 +51,8 @@ class settings extends StatelessWidget {
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   fontFamily: 'Nonito',
-                                  color: textColor),
+                                 // color: textColor
+                              ),
                             ),
                           ),
                           Padding(
@@ -79,7 +79,8 @@ class settings extends StatelessWidget {
                                     fontFamily: 'Nonito',
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
-                                    color: textColor),
+                                    //color: textColor
+                                ),
                               )),
                           Padding(
                             padding: const EdgeInsets.all(10),
@@ -112,7 +113,8 @@ class settings extends StatelessWidget {
                                     fontFamily: 'Nonito',
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
-                                    color: textColor),
+                                   // color: textColor
+                                ),
                               ),
                             ),
                             Padding(
@@ -131,28 +133,6 @@ class settings extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-            icon: IconButton(
-              onPressed: () => context.go('/homepage'),
-              icon: Icon(
-                Icons.home,
-              ),
-            ),
-            label: ''),
-        BottomNavigationBarItem(
-            icon: IconButton(
-              onPressed: () => context.go('/progress'),
-              icon: Icon(Icons.trending_up_outlined),
-            ),
-            label: ''),
-        BottomNavigationBarItem(
-            icon: IconButton(
-              onPressed: () => context.go('/settings'),
-              icon: Icon(Icons.settings),
-            ),
-            label: '')
-      ]),
-    );
+bottomNavigationBar: const BottomNavBar(),    );
   }
 }

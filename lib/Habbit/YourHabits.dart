@@ -61,142 +61,134 @@ class _HabbitPageState extends State<HabbitPagee>
             color: textColor,
           ),
         ),
-      ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 100,
-            child: ListView.separated(
-              controller: _scrollController,
-              scrollDirection: Axis.horizontal,
-              itemCount: lastDay.difference(firstDay).inDays + 1,
-              separatorBuilder: (context, index) => SizedBox(width: 6),
-              itemBuilder: (context, index) {
-                DateTime currentDate = firstDay.add(Duration(days: index));
-                bool isSelected = selectedDay == currentDate;
-
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedDay = currentDate;
-                    });
-
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => habbit_page(selectedDate: selectedDay),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 80,
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.blue : Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey.shade300),
-                      boxShadow: isSelected
-                          ? [BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 6)]
-                          : [],
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          DateFormat('EEE').format(currentDate),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isSelected ? Colors.white : Colors.black,
-                          ),
-                        ),
-                        Text(
-                          DateFormat('d').format(currentDate),
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: "TODAY"),
+            Tab(text: "ALL"),
+          ],
+          indicator: UnderlineTabIndicator(
+            borderSide: BorderSide(color: Colors.transparent),
           ),
+          indicatorColor: Colors.transparent,
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(top: 10),
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 100,
+              child: ListView.separated(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                itemCount: lastDay.difference(firstDay).inDays + 1,
+                separatorBuilder: (context, index) => SizedBox(width: 6),
+                itemBuilder: (context, index) {
+                  DateTime currentDate = firstDay.add(Duration(days: index));
+                  bool isSelected = selectedDay == currentDate;
 
-          SizedBox(height: 10),
-          SizedBox(
-            width: 200,
-            child: ElevatedButton(
-              style: ButtonStyle(
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  side: BorderSide(color: Colors.grey, width: 1),
-                )),
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(Colors.transparent),
-                elevation: MaterialStateProperty.all<double>(0),
-              ),
-              onPressed: () {
-                NewGoal();
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'ADD NEW',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      color: Colors.deepOrange[400],
-                      fontFamily: 'Nonito',
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedDay = currentDate;
+                      });
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => habbit_page(selectedDate: selectedDay),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 80,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.blue : Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey.shade300),
+                        boxShadow: isSelected
+                            ? [BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 6)]
+                            : [],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            DateFormat('EEE').format(currentDate),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                          ),
+                          Text(
+                            DateFormat('d').format(currentDate),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 5),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 10),
+            SizedBox(
+              width: 200,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        side: BorderSide(color: Colors.grey, width: 1),
+                      )),
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                  elevation: MaterialStateProperty.all<double>(0),
+                ),
+                onPressed: () {
+                  NewGoal();
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'ADD NEW',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: Colors.deepOrange[400],
+                        fontFamily: 'Nonito',
+                      ),
+                    ),
+                    SizedBox(width: 5),
+                    Icon(
                       Icons.add,
                       size: 25,
-                      weight: 20,
                       color: Colors.deepOrange[400],
                     ),
-                  ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 15),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.6, // Adjust height dynamically
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  habbit_page(selectedDate: DateTime.now()),
+                  allhabbit(),
                 ],
               ),
             ),
-          ),
-
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-            ),
-            child: TabBar(
-              controller: _tabController,
-              tabs: [
-                Tab(text: "TODAY"),
-                Tab(text: "ALL"),
-              ],
-
-              indicator: UnderlineTabIndicator(
-                borderSide: BorderSide(color: Colors.transparent),
-              ),
-              indicatorColor: Colors.transparent,
-            ),
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                habbit_page(selectedDate: DateTime.now(),),
-                allhabbit(),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

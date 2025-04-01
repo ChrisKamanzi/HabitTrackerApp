@@ -16,7 +16,8 @@ class _AccountPageState extends State<account_page> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -88,7 +89,8 @@ class _AccountPageState extends State<account_page> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -99,7 +101,7 @@ class _AccountPageState extends State<account_page> {
           'Account',
           style: TextStyle(
               fontWeight: FontWeight.w600,
-              color: Color.fromRGBO(47, 47, 47, 1),
+              // color: Color.fromRGBO(47, 47, 47, 1),
               fontFamily: 'Nonito',
               fontSize: 29),
         ),
@@ -237,7 +239,8 @@ class _AccountPageState extends State<account_page> {
           BottomNavigationBarItem(
               icon: IconButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => homepage()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => homepage()));
                 },
                 icon: Icon(Icons.home),
               ),
@@ -245,7 +248,8 @@ class _AccountPageState extends State<account_page> {
           BottomNavigationBarItem(
               icon: IconButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => progresss()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => progresss()));
                 },
                 icon: Icon(Icons.trending_up_outlined),
               ),
@@ -253,7 +257,8 @@ class _AccountPageState extends State<account_page> {
           BottomNavigationBarItem(
               icon: IconButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => settings()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => settings()));
                 },
                 icon: Icon(Icons.settings),
               ),
