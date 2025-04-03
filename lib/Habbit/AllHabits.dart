@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:go_router/go_router.dart';
 
 class allhabbit extends StatefulWidget {
   allhabbit({
@@ -35,151 +36,151 @@ class _habbit_pageState extends State<allhabbit> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10),
-            child: Container(
-              padding: EdgeInsets.only(top: 10, left: 10, right: 10),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 2, right: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'All Habits',
-                      style: TextStyle(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 30),
+        child: Column(
+
+          children: [
+            SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Container(
+                padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 2, right: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'All Habits',
+                        style: TextStyle(
                           fontFamily: 'Nonito',
                           fontSize: 21,
                           fontWeight: FontWeight.w700,
-                        //  color: Color.fromRGBO(47, 47, 47, 1)
+                          //  color: Color.fromRGBO(47, 47, 47, 1)
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 20),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: habitsCollection.snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text('No habits found.'));
-                }
-                return ListView(
-                  children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                    Map<String, dynamic> data =
-                        document.data() as Map<String, dynamic>;
-                    bool isCompleted = data['completed'] ?? false;
+            SizedBox(height: 20),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: habitsCollection.snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(child: Text('No habits found.'));
+                  }
+                  return ListView(
+                    children:
+                        snapshot.data!.docs.map((DocumentSnapshot document) {
+                      Map<String, dynamic> data =
+                          document.data() as Map<String, dynamic>;
+                      bool isCompleted = data['completed'] ?? false;
 
-                    DateTime now = DateTime.now();
-                    String formattedDate = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+                      DateTime now = DateTime.now();
+                      String formattedDate =
+                          "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
 
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        width: 500,
-                        height: 80,
-                        child: Card(
-                          color: isCompleted
-                              ? Color.fromRGBO(
-                                  237, 255, 244, 1)
-                              : Colors.grey[200],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  data['Habit'],
-                                  style: TextStyle(
-                                    fontFamily: 'Nonito',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color.fromRGBO(55, 200, 113, 1),
-                                  ),
-                                ),
-
-                            Row(
-                                  children: [
-                                    Checkbox(
-                                      value: isCompleted,
-                                      onChanged: (bool? newValue) {
-                                       //  print('Updating ${document.id} for date $formattedDate with value $newValue');
-                                        habitsCollection
-                                            .doc(document.id)
-                                            .update({
-                                          'completed': newValue,
-                                          'completedDays.$formattedDate': newValue,
-                                        });},
-                                      activeColor:
-                                          Color.fromRGBO(55, 200, 113, 1),
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          width: 500,
+                          height: 80,
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 5),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    data['Habit'],
+                                    style: TextStyle(
+                                      fontFamily: 'Nonito',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      //color: Color.fromRGBO(55, 200, 113, 1),
                                     ),
-                                    PopupMenuButton(
-                                      icon: Icon(
-                                        Icons.more_vert,
-                                        color: Color.fromRGBO(102, 102, 102, 1),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Checkbox(
+                                        value: isCompleted,
+                                        onChanged: (bool? newValue) {
+                                          habitsCollection
+                                              .doc(document.id)
+                                              .update({
+                                            'completed': newValue,
+                                            'completedDays.$formattedDate':
+                                                newValue,
+                                          });
+                                        },
+                                        activeColor:
+                                            Color.fromRGBO(55, 200, 113, 1),
                                       ),
-                                      itemBuilder: (BuildContext context) =>
-                                          <PopupMenuEntry<int>>[
-                                        PopupMenuItem<int>(
-                                          value: 1,
-                                          child: TextButton(
-                                            onPressed: () {
-
-                                              UpdateFirestore(
-                                                document.id,
-                                                _yourHabit.text.toString(),
-                                                data['period'],
-                                                data['Habbit type'],
-                                              );
-                                            },
-                                            child: Text('Edit'),
-                                          ),
+                                      PopupMenuButton(
+                                        icon: Icon(
+                                          Icons.more_vert,
+                                          color: Color.fromRGBO(102, 102, 102, 1),
                                         ),
-                                        PopupMenuItem<int>(
-                                          value: 2,
-                                          child: TextButton(
-                                            onPressed: () {
-                                              deleteGoal(document.id);
-                                            },
-                                            child: Text('Delete'),
+                                        itemBuilder: (BuildContext context) =>
+                                            <PopupMenuEntry<int>>[
+                                          PopupMenuItem<int>(
+                                            value: 1,
+                                            child: TextButton(
+                                              onPressed: () {
+                                                UpdateFirestore(
+                                                  document.id,
+                                                  _yourHabit.text.toString(),
+                                                  data['period'],
+                                                  data['Habbit type'],
+                                                );
+                                              },
+                                              child: Text('Edit'),
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ],
+                                          PopupMenuItem<int>(
+                                            value: 2,
+                                            child: TextButton(
+                                              onPressed: () {
+                                                deleteGoal(document.id);
+                                              },
+                                              child: Text('Delete'),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-        ],
+            SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -277,10 +278,10 @@ class _habbit_pageState extends State<allhabbit> {
                     Text(
                       'Habbit Type',
                       style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: 'Nonito',
-                          fontWeight: FontWeight.w600,
-                          color: Color.fromRGBO(47, 47, 47, 1),
+                        fontSize: 14,
+                        fontFamily: 'Nonito',
+                        fontWeight: FontWeight.w600,
+                        color: Color.fromRGBO(47, 47, 47, 1),
                       ),
                     ),
                     SizedBox(

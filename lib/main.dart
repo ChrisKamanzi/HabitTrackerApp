@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:new_application/Habbit/TodayHabit.dart';
 import 'package:new_application/Progress/progress_page.dart';
 import 'package:new_application/Settings/Settings_page.dart';
 import 'package:new_application/authentication/login.dart';
@@ -10,6 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:new_application/providers/them_provider.dart';
 import 'package:new_application/splash_screen.dart';
+
+import 'Habbit/YourHabits.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,6 +86,12 @@ final GoRouter _router = GoRouter(
       path: '/signUp',
       builder: (BuildContext context, GoRouterState state) {
         return sign_up();
+      },
+    ),
+    GoRoute(
+      path: '/yourHabbit',
+      builder: (BuildContext context, GoRouterState state) {
+        return HabbitPagee();
       },
     ),
   ],

@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import 'login.dart';
 
 class sign_up extends StatefulWidget {
@@ -16,6 +19,9 @@ class _sign_upState extends State<sign_up> {
   TextEditingController _passController = TextEditingController();
   TextEditingController _confirmController = TextEditingController();
   TextEditingController _usernameController = TextEditingController();
+
+  List<String> countries = [];
+  String? selectedCountry;
 
   String? error_text;
 
@@ -56,12 +62,37 @@ class _sign_upState extends State<sign_up> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchCountries();
+  }
+
+  Future<void> fetchCountries() async {
+    final response =
+        await http.get(Uri.parse('https://restcountries.com/v3.1/all'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      setState(() {
+        countries = data
+            .map((country) => country['name']['common'].toString())
+            .toList();
+        countries.sort();
+      }
+      );
+    } else {
+      throw Exception('Failed to load countries');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Padding(
-          padding: const EdgeInsets.only(top: 70,left: 40, right: 40),
+          padding: const EdgeInsets.only(top: 70, left: 40, right: 40),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -73,7 +104,7 @@ class _sign_upState extends State<sign_up> {
                   color: Color.fromRGBO(47, 47, 47, 1),
                 ),
               ),
-              SizedBox(height: 30,),
+              SizedBox(height: 30),
               Text(
                 'Name',
                 style: TextStyle(
@@ -161,10 +192,45 @@ class _sign_upState extends State<sign_up> {
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Nationality',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: Color.fromRGBO(102, 102, 102, 1),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
               SizedBox(
                 height: 50,
-                width: 700,
+                child: DropdownButtonFormField<String>(
+                  value: selectedCountry,
+                  isExpanded: true,
+                  items: countries.map((country) {
+                    return DropdownMenuItem<String>(
+                      value: country,
+                      child: Text(country),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCountry = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              SizedBox(
+                height: 50,
+                width: 1000,
                 child: Ink(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: <Color>[

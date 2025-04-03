@@ -2,12 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Habbit/goals.dart';
-import '../Home/home.dart';
-import '../Settings/Settings_page.dart';
-import '../widget.dart';
-import 'Goals_progress.dart';
-import 'package:go_router/go_router.dart';
+import '../widget/bottomNavBar.dart';
 
 class progresss extends StatefulWidget {
   const progresss({super.key});
@@ -29,17 +26,15 @@ class _progresssState extends State<progresss> {
 
   Future<List<Map<String, dynamic>>> fetchGoals() async {
     try {
-      // Fetch all documents from the 'Goal' collection
       QuerySnapshot snapshot =
           await FirebaseFirestore.instance.collection('Goal').get();
 
-      // Convert documents to a list of maps
       return snapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
           .toList();
     } catch (e) {
       print('Error fetching goals: $e');
-      return []; // Return an empty list in case of an error
+      return [];
     }
   }
 
@@ -60,10 +55,10 @@ class _progresssState extends State<progresss> {
     try {
       QuerySnapshot snapshot =
           await FirebaseFirestore.instance.collection('Goal').get();
-      return snapshot.docs.length; // Return total number of goals
+      return snapshot.docs.length;
     } catch (e) {
       print('Error: $e');
-      return 0; // Return 0 if there's an error
+      return 0;
     }
   }
 
@@ -78,7 +73,7 @@ class _progresssState extends State<progresss> {
     final textColor = Theme.of(context).textTheme.bodyLarge?.color;
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         title: Text(
           'Progress',
           style: TextStyle(
@@ -87,6 +82,17 @@ class _progresssState extends State<progresss> {
             fontWeight: FontWeight.w700,
             // color: textColor
           ),
+        ),
+      ),
+      drawer: Drawer(
+        child: TextButton(
+          onPressed: () async {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setBool('isLoggedIn', false);
+            await prefs.remove('userEmail');
+            context.go('/login');
+          },
+          child: Text('Logout'),
         ),
       ),
       body: SingleChildScrollView(
@@ -98,15 +104,15 @@ class _progresssState extends State<progresss> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                 /* Text(
                     'Progress Report',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 21,
                       fontFamily: 'Nonito',
                     ),
-                  ),
-                  Container(
+                  ),*/
+               /*  Container(
                     margin: EdgeInsets.only(right: 20, top: 10),
                     padding: EdgeInsets.only(right: 20),
                     height: 40,
@@ -146,13 +152,11 @@ class _progresssState extends State<progresss> {
                             newVAlue = status;
                           }),
                     ),
-                  ),
+                  ),*/
                 ],
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10,),
             Container(
               padding: EdgeInsets.only(
                 left: 20,

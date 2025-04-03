@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:new_application/Settings/Theme.dart';
-import '../widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../widget/bottomNavBar.dart';
 import 'Account_page.dart';
+
 class settings extends StatelessWidget {
   const settings({super.key});
 
@@ -10,15 +13,26 @@ class settings extends StatelessWidget {
     final textColor = Theme.of(context).textTheme.bodyLarge?.color;
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         title: Text(
           'Settings',
           style: TextStyle(
-              fontFamily: 'Nonito',
-              fontWeight: FontWeight.w700,
-              fontSize: 29,
-              //color: textColor
+            fontFamily: 'Nonito',
+            fontWeight: FontWeight.w700,
+            fontSize: 29,
+            //color: textColor
           ),
+        ),
+      ),
+      drawer: Drawer(
+        child: TextButton(
+          onPressed: () async {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setBool('isLoggedIn', false);
+            await prefs.remove('userEmail');
+            context.go('/login');
+          },
+          child: Text('Logout'),
         ),
       ),
       body: SingleChildScrollView(
@@ -48,10 +62,10 @@ class settings extends StatelessWidget {
                             child: Text(
                               'Account',
                               style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  fontFamily: 'Nonito',
-                                 // color: textColor
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Nonito',
+                                // color: textColor
                               ),
                             ),
                           ),
@@ -64,7 +78,7 @@ class settings extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 10),
-                  Container(
+                  /* Container(
                     width: 422,
                     height: 58,
                     child: Card(
@@ -89,7 +103,7 @@ class settings extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ),
+                  ),*/
                   SizedBox(height: 10),
                   Container(
                     width: 422,
@@ -110,10 +124,10 @@ class settings extends StatelessWidget {
                               child: Text(
                                 'Theme',
                                 style: TextStyle(
-                                    fontFamily: 'Nonito',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                   // color: textColor
+                                  fontFamily: 'Nonito',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  // color: textColor
                                 ),
                               ),
                             ),
@@ -133,6 +147,7 @@ class settings extends StatelessWidget {
           ),
         ),
       ),
-bottomNavigationBar: const BottomNavBar(),    );
+      bottomNavigationBar: const BottomNavBar(),
+    );
   }
 }

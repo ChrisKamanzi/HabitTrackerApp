@@ -98,7 +98,7 @@ class _HabbitPageState extends State<HabbitPagee>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => habbit_page(selectedDate: selectedDay),
+                          builder: (context) => allhabbit(),
                         ),
                       );
                     },
@@ -110,7 +110,11 @@ class _HabbitPageState extends State<HabbitPagee>
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: Colors.grey.shade300),
                         boxShadow: isSelected
-                            ? [BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 6)]
+                            ? [
+                                BoxShadow(
+                                    color: Colors.blue.withOpacity(0.3),
+                                    blurRadius: 6)
+                              ]
                             : [],
                       ),
                       child: Column(
@@ -145,10 +149,11 @@ class _HabbitPageState extends State<HabbitPagee>
                 style: ButtonStyle(
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        side: BorderSide(color: Colors.grey, width: 1),
-                      )),
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                    borderRadius: BorderRadius.circular(15),
+                    side: BorderSide(color: Colors.grey, width: 1),
+                  )),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.transparent),
                   elevation: MaterialStateProperty.all<double>(0),
                 ),
                 onPressed: () {
@@ -178,7 +183,8 @@ class _HabbitPageState extends State<HabbitPagee>
             ),
             SizedBox(height: 15),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.6, // Adjust height dynamically
+              height: MediaQuery.of(context).size.height *
+                  0.6, // Adjust height dynamically
               child: TabBarView(
                 controller: _tabController,
                 children: [
@@ -194,176 +200,177 @@ class _HabbitPageState extends State<HabbitPagee>
   }
 
   Future NewGoal() => showDialog(
-        context: context,
-        builder: (context) {
-          final textColor = Theme.of(context).textTheme.bodyLarge?.color;
-          return AlertDialog(
-            title: Row(
+      context: context,
+      builder: (context) {
+        final textColor = Theme.of(context).textTheme.bodyLarge?.color;
+        return AlertDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Create New Habit',
+                style: TextStyle(
+                  fontFamily: 'Nonito',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(
+                  Icons.close,
+                ),
+              )
+            ],
+          ),
+          content: Form(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Create New Habit',
+                  'Your Haabit',
                   style: TextStyle(
+                    fontWeight: FontWeight.w600,
                     fontFamily: 'Nonito',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: textColor,
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(
-                    Icons.close,
-                  ),
-                )
-              ],
-            ),
-            content: Form(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Your Habit',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Nonito',
-                      fontSize: 14,
-                      color: textColor,
+                SizedBox(height: 15),
+                TextFormField(
+                  controller: _yourHabit,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5))),
+                ),
+                SizedBox(height: 15),
+                Row(
+                  children: [
+                    Text(
+                      'Period',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Nonito',
+                        fontSize: 14,
+                        color: textColor,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 15),
-                  TextFormField(
-                    controller: _yourHabit,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5))),
-                  ),
-                  SizedBox(height: 15),
-                  Row(
-                    children: [
-                      Text(
-                        'Period',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Nonito',
-                          fontSize: 14,
-                          color: textColor,
-                        ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 50,
                       ),
-                      SizedBox(width: 10,),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 50,
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            items: [
-                              DropdownMenuItem<String>(
-                                value: '1 month(30 days)',
-                                child: Text('1 month(30 days)'),
-                              ),
-                              DropdownMenuItem<String>(
-                                value: '2 months(60 days)',
-                                child: Text('2 months(60 days)'),
-                              ),
-                            ],
-                            onChanged: (String? newVal) {
-                              setState(() {
-                                _selected = newVal ?? _selected;
-                              });
-                            },
-                            value: _selected,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        'Habbit Type',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontFamily: 'Nonito',
-                            fontWeight: FontWeight.w600,
-                            color: textColor),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 50),
+                      child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
-                          // isExpanded : true,
-                          value: habbitType,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              habbitType = newValue ?? habbitType;
-                            });
-                          },
-                          items: const [
+                          items: [
                             DropdownMenuItem<String>(
-                                value: 'Everyday', child: Text('Everyday')),
-                            DropdownMenuItem<String>(
-                              value: 'Every week',
-                              child: Text('Every week'),
+                              value: '1 month(30 days)',
+                              child: Text('1 month(30 days)'),
                             ),
                             DropdownMenuItem<String>(
-                              value: 'Every Months',
-                              child: Text('Every Months'),
-                            )
+                              value: '2 months(60 days)',
+                              child: Text('2 months(60 days)'),
+                            ),
                           ],
+                          onChanged: (String? newVal) {
+                            setState(() {
+                              _selected = newVal ?? _selected;
+                            });
+                          },
+                          value: _selected,
                         ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Ink(
-                    width: 328,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: <Color>[
-                          Color.fromRGBO(255, 164, 80, 1),
-                          Color.fromRGBO(255, 92, 0, 1),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'Habbit Type',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: 'Nonito',
+                          fontWeight: FontWeight.w600,
+                          color: textColor),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 50),
+                      child: DropdownButton<String>(
+                        // isExpanded : true,
+                        value: habbitType,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            habbitType = newValue ?? habbitType;
+                          });
+                        },
+                        items: const [
+                          DropdownMenuItem<String>(
+                              value: 'Everyday', child: Text('Everyday')),
+                          DropdownMenuItem<String>(
+                            value: 'Every week',
+                            child: Text('Every week'),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: 'Every Months',
+                            child: Text('Every Months'),
+                          )
                         ],
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.centerRight,
                       ),
-                      borderRadius: BorderRadius.circular(5),
+                    )
+                  ],
+                ),
+                SizedBox(height: 20),
+                Ink(
+                  width: 328,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        Color.fromRGBO(255, 164, 80, 1),
+                        Color.fromRGBO(255, 92, 0, 1),
+                      ],
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.centerRight,
                     ),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          backgroundColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          )),
-                      onPressed: () {
-                        _saveToFirestore();
-                        Navigator.of(context).pop();
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        'Create New',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontFamily: 'Nonito',
-                            fontSize: 14,
-                            color: Color.fromRGBO(251, 251, 251, 1)),
-                      ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        shadowColor: Colors.transparent,
+                        backgroundColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        )),
+                    onPressed: () {
+                      _saveToFirestore();
+                      Navigator.of(context).pop();
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'Create New',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Nonito',
+                          fontSize: 14,
+                          color: Color.fromRGBO(251, 251, 251, 1)),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        }
-      );
+          ),
+        );
+      });
 
   void _saveToFirestore() {
     DateTime now = DateTime.now();

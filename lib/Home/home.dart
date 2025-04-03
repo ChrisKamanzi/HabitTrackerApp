@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_application/widget.dart';
+import 'package:new_application/widget/bottomNavBar.dart';
+import 'package:new_application/widget/drawer.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Habbit/YourHabits.dart';
@@ -15,9 +16,11 @@ import 'package:go_router/go_router.dart';
 
 class homepage extends ConsumerStatefulWidget {
   const homepage({super.key});
+
   @override
   ConsumerState<homepage> createState() => _homepageState();
 }
+
 class _homepageState extends ConsumerState<homepage> {
   TextEditingController _yourHabit = TextEditingController();
   String? _selected;
@@ -65,17 +68,7 @@ class _homepageState extends ConsumerState<homepage> {
           textAlign: TextAlign.start,
         ),
       ),
-      drawer: Drawer(
-        child: TextButton(
-          onPressed: () async {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setBool('isLoggedIn', false);
-            await prefs.remove('userEmail');
-            context.go('/login');
-          },
-          child: Text('Logout'),
-        ),
-      ),
+      drawer: AppDrawer(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,6 +133,7 @@ class _homepageState extends ConsumerState<homepage> {
                       int completedHabitsToday =
                           snapshot.data!.docs.where((doc) {
                         var habitData = doc.data() as Map<String, dynamic>;
+
                         Map<String, dynamic>? completedDays =
                             habitData['completedDays'];
                         return completedDays != null &&
@@ -371,18 +365,34 @@ class _homepageState extends ConsumerState<homepage> {
                                               children: [
                                                 Checkbox(
                                                   value: isCompleted,
-                                                  onChanged: (bool? newValue) {
+                                                  onChanged:
+                                                      (bool? newValue) async {
                                                     if (newValue != null) {
-                                                      habitsCollection
-                                                          .doc(document.id)
-                                                          .update({
-                                                        'completed': newValue,
-                                                        'completedDays': {
-                                                          ...completedDays ??
-                                                              {},
-                                                          today: newValue,
-                                                        }
-                                                      });
+                                                      Map<String, dynamic>
+                                                          updatedCompletedDays =
+                                                          Map.from(
+                                                              completedDays ??
+                                                                  {});
+
+                                                      if (newValue) {
+                                                        updatedCompletedDays[
+                                                            today] = true;
+                                                      } else {
+                                                        updatedCompletedDays
+                                                            .remove(today);
+                                                      }
+
+                                                      try {
+                                                        await habitsCollection
+                                                            .doc(document.id)
+                                                            .update({
+                                                          'completedDays':
+                                                              updatedCompletedDays,
+                                                        });
+                                                      } catch (e) {
+                                                        print(
+                                                            "Error updating habit: $e");
+                                                      }
                                                     }
                                                   },
                                                   activeColor:

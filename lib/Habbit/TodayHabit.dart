@@ -138,23 +138,32 @@ class _habbit_pageState extends State<habbit_page> {
                                   children: [
                                     Checkbox(
                                       value: isCompleted,
-                                      onChanged: (bool? newValue) {
+                                      onChanged: (bool? newValue) async {
                                         if (newValue != null) {
-                                          habitsCollection.doc(document.id).update({
-                                            'completed': newValue,
-                                            'completedDays': {
-                                              ...completedDays ?? {},
-                                              today: newValue,
-                                            }
-                                          });
+                                          Map<String, dynamic> updatedCompletedDays = Map.from(completedDays ?? {});
+
+                                          if (newValue) {
+                                            updatedCompletedDays[today] = true;
+                                          } else {
+                                             updatedCompletedDays.remove(today);
+                                          }
+
+                                          try {
+                                            await habitsCollection.doc(document.id).update({
+                                              'completedDays': updatedCompletedDays,
+                                            });
+                                          } catch (e) {
+                                            print("Error updating habit: $e");
+                                          }
                                         }
                                       },
                                       activeColor: theme.colorScheme.primary, // Adaptive check color
                                     ),
+
                                     PopupMenuButton(
                                       icon: Icon(
                                         Icons.more_vert,
-                                        color: textColor, // Adaptive icon color
+                                        color: Color.fromRGBO(102, 102, 102, 1),
                                       ),
                                       itemBuilder: (BuildContext context) =>
                                       <PopupMenuEntry<int>>[
@@ -162,23 +171,28 @@ class _habbit_pageState extends State<habbit_page> {
                                           value: 1,
                                           child: TextButton(
                                             onPressed: () {
-                                              // Edit functionality
+
+                                              UpdateFirestore(
+                                                document.id,
+                                                _yourHabit.text.toString(),
+                                                data['period'],
+                                                data['Habbit type'],
+                                              );
                                             },
-                                            child: Text('Edit', style: TextStyle(color: textColor)),
+                                            child: Text('Edit'),
                                           ),
                                         ),
                                         PopupMenuItem<int>(
                                           value: 2,
                                           child: TextButton(
                                             onPressed: () {
-                                              // Delete functionality
+                                              deleteGoal(document.id);
                                             },
-                                            child: Text('Delete', style: TextStyle(color: textColor)),
+                                            child: Text('Delete'),
                                           ),
                                         ),
                                       ],
-                                    ),
-                                  ],
+                                    )                                  ],
                                 ),
                               ],
                             ),
