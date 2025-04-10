@@ -118,34 +118,31 @@ class _homepageState extends ConsumerState<homepage> {
                     ),
                   ),
                   child: Center(
-                    child: StreamBuilder(
-                      stream: FirebaseFirestore.instance
+                    child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: FirebaseAuth.instance.currentUser != null
+                          ? FirebaseFirestore.instance
                           .collection('Habits')
-                          .snapshots(),
-                      builder:
-                          (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
+                          .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
+                          .snapshots()
+                          : Stream.empty(), // Stream empty if no user is logged in
+                      builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
                         }
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          return Center(
-                              child: Text("No habits found for today"));
+                          return Center(child: Text("No habits found for today"));
                         }
 
-                        String today =
-                            DateFormat('yyyy-MM-dd').format(DateTime.now());
+                        String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
+                        // Filter habits for the current user and calculate completion percentage
                         int totalHabitsToday = snapshot.data!.docs.length;
 
-                        int completedHabitsToday =
-                            snapshot.data!.docs.where((doc) {
+                        int completedHabitsToday = snapshot.data!.docs.where((doc) {
                           var habitData = doc.data() as Map<String, dynamic>;
 
-                          Map<String, dynamic>? completedDays =
-                              habitData['completedDays'];
-                          return completedDays != null &&
-                              completedDays.containsKey(today);
+                          Map<String, dynamic>? completedDays = habitData['completedDays'];
+                          return completedDays != null && completedDays.containsKey(today);
                         }).length;
 
                         double completionPercentage = totalHabitsToday > 0
@@ -162,10 +159,8 @@ class _homepageState extends ConsumerState<homepage> {
                                     radius: 70.0,
                                     lineWidth: 20.0,
                                     percent: completionPercentage,
-                                    // Updated dynamically
                                     center: Text(
-                                      '${(completionPercentage * 100).toInt()}%',
-                                      // Convert to integer
+                                      '${(completionPercentage * 100).toInt()}%', // Display percentage
                                       style: TextStyle(
                                         fontFamily: 'Nonito',
                                         fontSize: 21,
@@ -188,8 +183,7 @@ class _homepageState extends ConsumerState<homepage> {
                                           fontWeight: FontWeight.w700,
                                           fontFamily: 'Nonito',
                                           fontSize: 20,
-                                          color:
-                                              Color.fromRGBO(255, 255, 255, 1),
+                                          color: Color.fromRGBO(255, 255, 255, 1),
                                         ),
                                       ),
                                       Text(
@@ -198,8 +192,7 @@ class _homepageState extends ConsumerState<homepage> {
                                           fontSize: 20,
                                           fontFamily: 'Nonito',
                                           fontWeight: FontWeight.w500,
-                                          color:
-                                              Color.fromRGBO(255, 255, 255, 1),
+                                          color: Color.fromRGBO(255, 255, 255, 1),
                                         ),
                                       ),
                                     ],
@@ -248,11 +241,6 @@ class _homepageState extends ConsumerState<homepage> {
                                     fontFamily: 'Nonito',
                                     fontSize: 21,
                                     fontWeight: FontWeight.w700,
-                                    /*  color: Theme.of(context)
-                                          .textTheme
-                                            .bodyLarge
-                                            ?.color ??
-                                        Colors.black,*/
                                   ),
                                 ),
                                 TextButton(
@@ -260,18 +248,17 @@ class _homepageState extends ConsumerState<homepage> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                HabbitPagee()));
+                                            builder: (context) => HabbitPagee()));
                                   },
                                   child: ShaderMask(
                                     shaderCallback: (bounds) => LinearGradient(
-                                            colors: <Color>[
-                                          Color.fromRGBO(255, 164, 80, 1),
-                                          Color.fromRGBO(255, 92, 0, 1)
-                                        ],
-                                            begin: Alignment.bottomLeft,
-                                            end: Alignment.centerRight)
-                                        .createShader(bounds),
+                                      colors: <Color>[
+                                        Color.fromRGBO(255, 164, 80, 1),
+                                        Color.fromRGBO(255, 92, 0, 1)
+                                      ],
+                                      begin: Alignment.bottomLeft,
+                                      end: Alignment.centerRight,
+                                    ).createShader(bounds),
                                     child: Text(
                                       'See all',
                                       textAlign: TextAlign.end,
@@ -291,54 +278,50 @@ class _homepageState extends ConsumerState<homepage> {
                         SizedBox(height: 10),
                         Expanded(
                           child: StreamBuilder<QuerySnapshot>(
-                            stream: habitsCollection.snapshots(),
+                            stream: FirebaseAuth.instance.currentUser != null
+                                ? FirebaseFirestore.instance
+                                .collection('Habits')
+                                .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
+                                .snapshots()
+                                : Stream.empty(),
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                    child: CircularProgressIndicator());
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
                               }
                               if (snapshot.hasError) {
-                                return Center(
-                                    child: Text('Error: ${snapshot.error}'));
+                                return Center(child: Text('Error: ${snapshot.error}'));
                               }
-                              if (!snapshot.hasData ||
-                                  snapshot.data!.docs.isEmpty) {
+                              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                                 return Center(child: Text('No habits found.'));
                               }
                               final theme = Theme.of(context);
                               final textColor =
-                                  theme.textTheme.bodyLarge?.color ??
-                                      Colors.black;
+                                  theme.textTheme.bodyLarge?.color ?? Colors.black;
                               final backgroundColor = theme.cardColor;
                               final completedColor =
-                                  theme.brightness == Brightness.dark
-                                      ? Colors.green[900]
-                                      : Color.fromRGBO(237, 255, 244, 1);
+                              theme.brightness == Brightness.dark
+                                  ? Colors.green[900]
+                                  : Color.fromRGBO(237, 255, 244, 1);
 
-                              var everydayHabits =
-                                  snapshot.data!.docs.where((document) {
+                              var everydayHabits = snapshot.data!.docs.where((document) {
                                 Map<String, dynamic> data =
-                                    document.data() as Map<String, dynamic>;
+                                document.data() as Map<String, dynamic>;
                                 return data['Habit type'] == 'Everyday';
                               }).toList();
 
                               if (everydayHabits.isEmpty) {
-                                return Center(
-                                    child: Text('No everyday habits found.'));
+                                return Center(child: Text('No everyday habits found.'));
                               }
 
-                              String today = DateFormat('yyyy-MM-dd')
-                                  .format(DateTime.now());
+                              String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
                               return Column(
                                 children: everydayHabits
                                     .take(3)
                                     .map((DocumentSnapshot document) {
                                   Map<String, dynamic> data =
-                                      document.data() as Map<String, dynamic>;
-                                  Map<String, dynamic>? completedDays =
-                                      data['completedDays'];
+                                  document.data() as Map<String, dynamic>;
+                                  Map<String, dynamic>? completedDays = data['completedDays'];
                                   bool isCompleted = completedDays != null &&
                                       completedDays.containsKey(today);
 
@@ -346,24 +329,18 @@ class _homepageState extends ConsumerState<homepage> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 5),
                                     child: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 10),
+                                      padding: EdgeInsets.symmetric(horizontal: 10),
                                       width: 500,
                                       height: 70,
                                       child: Card(
-                                        color: isCompleted
-                                            ? completedColor
-                                            : backgroundColor,
+                                        color: isCompleted ? completedColor : backgroundColor,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
+                                          borderRadius: BorderRadius.circular(5),
                                         ),
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 5),
+                                          padding: const EdgeInsets.symmetric(horizontal: 5),
                                           child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
                                                 data['Habit'],
@@ -378,47 +355,40 @@ class _homepageState extends ConsumerState<homepage> {
                                                 children: [
                                                   Checkbox(
                                                     value: isCompleted,
-                                                    onChanged:
-                                                        (bool? newValue) async {
+                                                    onChanged: (bool? newValue) async {
                                                       if (newValue != null) {
                                                         Map<String, dynamic>
-                                                            updatedCompletedDays =
-                                                            Map.from(
-                                                                completedDays ??
-                                                                    {});
+                                                        updatedCompletedDays =
+                                                        Map.from(completedDays ?? {});
 
                                                         if (newValue) {
-                                                          updatedCompletedDays[
-                                                              today] = true;
+                                                          updatedCompletedDays[today] = true;
                                                         } else {
-                                                          updatedCompletedDays
-                                                              .remove(today);
+                                                          updatedCompletedDays.remove(today);
                                                         }
 
                                                         try {
-                                                          await habitsCollection
+                                                          await FirebaseFirestore.instance
+                                                              .collection('Habits')
                                                               .doc(document.id)
                                                               .update({
                                                             'completedDays':
-                                                                updatedCompletedDays,
+                                                            updatedCompletedDays,
                                                           });
                                                         } catch (e) {
-                                                          print(
-                                                              "Error updating habit: $e");
+                                                          print("Error updating habit: $e");
                                                         }
                                                       }
                                                     },
-                                                    activeColor: theme
-                                                        .colorScheme.primary,
+                                                    activeColor: theme.colorScheme.primary,
                                                   ),
                                                   PopupMenuButton(
                                                     icon: Icon(
                                                       Icons.more_vert,
                                                       color: textColor,
                                                     ),
-                                                    itemBuilder: (BuildContext
-                                                            context) =>
-                                                        <PopupMenuEntry<int>>[
+                                                    itemBuilder: (BuildContext context) =>
+                                                    <PopupMenuEntry<int>>[
                                                       PopupMenuItem<int>(
                                                         value: 1,
                                                         child: TextButton(
@@ -426,9 +396,7 @@ class _homepageState extends ConsumerState<homepage> {
                                                             // Edit functionality
                                                           },
                                                           child: Text('Edit',
-                                                              style: TextStyle(
-                                                                  color:
-                                                                      textColor)),
+                                                              style: TextStyle(color: textColor)),
                                                         ),
                                                       ),
                                                       PopupMenuItem<int>(
@@ -438,9 +406,7 @@ class _homepageState extends ConsumerState<homepage> {
                                                             // Delete functionality
                                                           },
                                                           child: Text('Delete',
-                                                              style: TextStyle(
-                                                                  color:
-                                                                      textColor)),
+                                                              style: TextStyle(color: textColor)),
                                                         ),
                                                       ),
                                                     ],

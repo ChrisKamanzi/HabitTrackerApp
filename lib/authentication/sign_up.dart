@@ -57,7 +57,7 @@ class _sign_upState extends State<sign_up> {
         context.go('/login');
       }
     } catch (e) {
-      print("Error: $e"); // Print error for debugging
+      print("Error: $e");
     }
   }
 

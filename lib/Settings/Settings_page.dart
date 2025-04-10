@@ -27,7 +27,6 @@ class settings extends StatelessWidget {
           ),
         ),
       ),
-
       drawer: AppDrawer(),
       body: RefreshIndicator(
         onRefresh: _refresh,
