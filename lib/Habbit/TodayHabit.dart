@@ -73,7 +73,10 @@ class _habbit_pageState extends State<habbit_page> {
 
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: habitsCollection.snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('Habits')
+                  .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -145,7 +148,7 @@ class _habbit_pageState extends State<habbit_page> {
                                           if (newValue) {
                                             updatedCompletedDays[today] = true;
                                           } else {
-                                             updatedCompletedDays.remove(today);
+                                            updatedCompletedDays.remove(today);
                                           }
 
                                           try {
@@ -159,7 +162,6 @@ class _habbit_pageState extends State<habbit_page> {
                                       },
                                       activeColor: theme.colorScheme.primary, // Adaptive check color
                                     ),
-
                                     PopupMenuButton(
                                       icon: Icon(
                                         Icons.more_vert,
@@ -171,7 +173,6 @@ class _habbit_pageState extends State<habbit_page> {
                                           value: 1,
                                           child: TextButton(
                                             onPressed: () {
-
                                               UpdateFirestore(
                                                 document.id,
                                                 _yourHabit.text.toString(),
@@ -192,7 +193,8 @@ class _habbit_pageState extends State<habbit_page> {
                                           ),
                                         ),
                                       ],
-                                    )                                  ],
+                                    )
+                                  ],
                                 ),
                               ],
                             ),
