@@ -37,11 +37,10 @@ class _AccountPageState extends State<account_page> {
 
   Future<void> _updateAccount() async {
     String name = _nameController.text.trim();
-    String email = _emailController.text.trim();
-    String password = _passwordController.text.trim();
+    String newPassword = _passwordController.text.trim();
     String confirmPassword = _confirmPasswordController.text.trim();
 
-    if (password != confirmPassword) {
+    if (newPassword.isNotEmpty && newPassword != confirmPassword) {
       _showError("Passwords do not match");
       return;
     }
@@ -49,35 +48,27 @@ class _AccountPageState extends State<account_page> {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        // Step 1: Re-authenticate the user (current credentials required)
+        // Ask for current password to re-authenticate — you need to prompt the user for this
+        String currentPassword = await _promptForCurrentPassword(); // custom function
+
         AuthCredential credential = EmailAuthProvider.credential(
           email: user.email ?? '',
-          password: password,
+          password: currentPassword,
         );
 
-        // Re-authenticate the user
         await user.reauthenticateWithCredential(credential);
 
-        // Step 2: Update email if it's different from the current one
-        if (email != user.email) {
-          await user.updateEmail(email);
-        }
-
-        // Step 3: Update password if a new password is provided
-        if (password.isNotEmpty) {
-          await user.updatePassword(password);
-        }
-
-        // Step 4: Update Firestore user document with the new name
+        // Update name in Firestore
         await _firestore.collection('users').doc(user.uid).update({
           'username': name,
         });
 
-        // Step 5: Reload the user data to reflect changes
-        await user.reload();
-        user = _auth.currentUser;
+        // Optionally update password
+        if (newPassword.isNotEmpty) {
+          await user.updatePassword(newPassword);
+        }
 
-        // Show success message
+        await user.reload();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Account updated successfully")),
         );
@@ -87,6 +78,40 @@ class _AccountPageState extends State<account_page> {
       print(e);
     }
   }
+  Future<String> _promptForCurrentPassword() async {
+    String currentPassword = '';
+    await showDialog(
+      context: context,
+      builder: (context) {
+        final controller = TextEditingController();
+        return AlertDialog(
+          title: Text("Re-authenticate"),
+          content: TextField(
+            controller: controller,
+            obscureText: true,
+            decoration: InputDecoration(hintText: "Enter your current password"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                currentPassword = controller.text;
+                Navigator.of(context).pop();
+              },
+              child: Text("Confirm"),
+            ),
+          ],
+        );
+      },
+    );
+    return currentPassword;
+  }
+
 
   void _showError(String message) {
     ScaffoldMessenger.of(context)

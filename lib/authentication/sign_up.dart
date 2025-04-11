@@ -79,8 +79,7 @@ class _sign_upState extends State<sign_up> {
             .map((country) => country['name']['common'].toString())
             .toList();
         countries.sort();
-      }
-      );
+      });
     } else {
       throw Exception('Failed to load countries');
     }

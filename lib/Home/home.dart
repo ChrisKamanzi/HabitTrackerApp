@@ -543,7 +543,7 @@ class _homepageState extends ConsumerState<homepage> {
                                 .collection('Goal')
                                 .where('email',
                                     isEqualTo: FirebaseAuth
-                                        .instance.currentUser!.email)
+                                        .instance.currentUser?.email ?? 'No user')
                                 .snapshots(),
                             builder: (context,
                                 AsyncSnapshot<QuerySnapshot> goalSnapshot) {

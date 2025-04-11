@@ -41,6 +41,26 @@ class _LoginState extends ConsumerState<login> {
     final isLoading = ref.watch(authProvider);
     final isChecked = ref.watch(rememberMeProvider);
 
+    Future<void> login(String email, String password, bool rememberMe) async {
+      try {
+        final auth = FirebaseAuth.instance;
+        await auth.signInWithEmailAndPassword(email: email, password: password);
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        if (rememberMe) {
+          await prefs.setBool('isLoggedIn', true);
+          await prefs.setString('userEmail', email);
+        } else {
+          await prefs.remove('isLoggedIn');
+          await prefs.remove('userEmail');
+        }
+      } on FirebaseAuthException catch (e) {
+        throw Exception(e);
+      } catch (e) {
+        throw Exception("An unexpected error occurred.");
+      }
+    }
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 50),
@@ -126,7 +146,8 @@ class _LoginState extends ConsumerState<login> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => forgotPassword()),
+                          MaterialPageRoute(
+                              builder: (context) => forgotPassword()),
                         );
                       },
                       child: Text(
@@ -145,48 +166,70 @@ class _LoginState extends ConsumerState<login> {
                 isLoading
                     ? Center(child: CircularProgressIndicator())
                     : SizedBox(
-                  width: 400,
-                  height: 50,
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: <Color>[
-                          Color.fromRGBO(255, 164, 80, 1),
-                          Color.fromRGBO(255, 92, 0, 1),
-                        ],
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.centerRight,
-                      ),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                        backgroundColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4)),
-                      ),
-                      onPressed: () async {
-                        await ref.read(authProvider.notifier).login(
-                          _emailController.text.trim(),
-                          _passController.text.trim(),
-                          isChecked,
-                        );
-                        context.go('/homepage');
-                      },
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          fontFamily: 'Nonito',
-                          color: Color.fromRGBO(251, 251, 251, 1),
+                        width: 400,
+                        height: 50,
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: <Color>[
+                                Color.fromRGBO(255, 164, 80, 1),
+                                Color.fromRGBO(255, 92, 0, 1),
+                              ],
+                              begin: Alignment.bottomLeft,
+                              end: Alignment.centerRight,
+                            ),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
+                              backgroundColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4)),
+                            ),
+                            onPressed: () async {
+                              try {
+                                // Start loading
+                                ref.read(authProvider.notifier).state = true;
+
+                                // Perform login
+                                await login(
+                                  _emailController.text.trim(),
+                                  _passController.text.trim(),
+                                  isChecked,
+                                );
+
+                                // Navigate only if login succeeded
+                                context.go('/homepage');
+                              } catch (e) {
+                                // Show a snackbar with error message
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      e.toString().replaceAll('Exception: ', ''),
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              } finally {
+                                // Stop loading
+                                ref.read(authProvider.notifier).state = false;
+                              }
+                            },
+
+                            child: Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                fontFamily: 'Nonito',
+                                color: Color.fromRGBO(251, 251, 251, 1),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
                 SizedBox(height: 40),
                 Center(
                   child: Row(
