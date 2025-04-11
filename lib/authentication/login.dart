@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../encryption/encryption.dart';
 import '../providers/auth_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
-import 'forgot_password.dart';
-import 'sign_up.dart';
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 
 class login extends ConsumerStatefulWidget {
@@ -31,10 +31,14 @@ class _LoginState extends ConsumerState<login> {
     String? savedEmail = prefs.getString('userEmail');
 
     if (isLoggedIn == true && savedEmail != null) {
-      _emailController.text = savedEmail;
+      String decryptedEmail = await EncryptionHelper.decryptText(savedEmail);
+      print('🔓 Decrypted Email: $decryptedEmail'); // 👈 helpful for debugging
+
+      _emailController.text = decryptedEmail;
       ref.read(rememberMeProvider.notifier).state = true;
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +53,9 @@ class _LoginState extends ConsumerState<login> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         if (rememberMe) {
           await prefs.setBool('isLoggedIn', true);
-          await prefs.setString('userEmail', email);
+          String encryptedEmail = await EncryptionHelper.encryptText(email);
+          print('Encrypted Email: $encryptedEmail');
+          await prefs.setString('userEmail', encryptedEmail);
         } else {
           await prefs.remove('isLoggedIn');
           await prefs.remove('userEmail');
@@ -143,13 +149,7 @@ class _LoginState extends ConsumerState<login> {
                     ),
                     SizedBox(width: 30),
                     TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => forgotPassword()),
-                        );
-                      },
+                      onPressed: () => context.push('/forgotEmail'),
                       child: Text(
                         'Forgot Password?',
                         style: TextStyle(
@@ -207,7 +207,9 @@ class _LoginState extends ConsumerState<login> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      e.toString().replaceAll('Exception: ', ''),
+                                      e
+                                          .toString()
+                                          .replaceAll('Exception: ', ''),
                                     ),
                                     backgroundColor: Colors.red,
                                   ),
@@ -217,7 +219,6 @@ class _LoginState extends ConsumerState<login> {
                                 ref.read(authProvider.notifier).state = false;
                               }
                             },
-
                             child: Text(
                               'Login',
                               style: TextStyle(

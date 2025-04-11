@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
-import 'login.dart';
 
 class sign_up extends StatefulWidget {
   const sign_up({super.key});
@@ -15,6 +14,7 @@ class sign_up extends StatefulWidget {
 }
 
 class _sign_upState extends State<sign_up> {
+
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passController = TextEditingController();
   TextEditingController _confirmController = TextEditingController();
@@ -22,7 +22,6 @@ class _sign_upState extends State<sign_up> {
 
   List<String> countries = [];
   String? selectedCountry;
-
   String? error_text;
 
   void validatePassword() {

@@ -1,7 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_otp/email_otp.dart';
-
-import 'otp.dart';
+import 'package:go_router/go_router.dart';
 
 class forgotPassword extends StatefulWidget {
   const forgotPassword({super.key});
@@ -36,6 +36,7 @@ class _forgotPasswordState extends State<forgotPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 30, top: 100, right: 30),
@@ -77,11 +78,8 @@ class _forgotPasswordState extends State<forgotPassword> {
                   ),
                   child: ElevatedButton(
                     onPressed: () async {
-                      await sendOTP();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => otp(email :  _emailController.text)), // Make sure you have OTPPage()
-                      );
+                       await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text);
+                      context.go('/login');
                     },
                     style: ElevatedButton.styleFrom(
                       elevation: 0,

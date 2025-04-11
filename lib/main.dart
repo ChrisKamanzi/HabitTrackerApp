@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:new_application/Habbit/TodayHabit.dart';
 import 'package:new_application/Progress/progress_page.dart';
 import 'package:new_application/Settings/Settings_page.dart';
+import 'package:new_application/authentication/forgot_password.dart';
 import 'package:new_application/authentication/login.dart';
 import 'package:new_application/Home/home.dart';
 import 'package:new_application/authentication/sign_up.dart';
@@ -92,6 +93,12 @@ final GoRouter _router = GoRouter(
       path: '/yourHabbit',
       builder: (BuildContext context, GoRouterState state) {
         return HabbitPagee();
+      },
+    ),
+    GoRoute(
+      path: '/forgotEmail',
+      builder: (BuildContext context, GoRouterState state) {
+        return forgotPassword();
       },
     ),
   ],
