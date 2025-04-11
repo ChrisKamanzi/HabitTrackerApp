@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -89,7 +90,12 @@ class _goalState extends State<goal> {
           ),
           Expanded(
             child: StreamBuilder(
-              stream: FirebaseFirestore.instance.collection('Goal').snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('Goal')
+                  .where('email',
+                  isEqualTo: FirebaseAuth
+                      .instance.currentUser!.email)
+              .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> goalSnapshot) {
                 if (goalSnapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());

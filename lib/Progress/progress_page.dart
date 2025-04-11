@@ -92,68 +92,12 @@ class _progresssState extends State<progresss> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                   /* Text(
-                      'Progress Report',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 21,
-                        fontFamily: 'Nonito',
-                      ),
-                    ),*/
-                 /*  Container(
-                      margin: EdgeInsets.only(right: 20, top: 10),
-                      padding: EdgeInsets.only(right: 20),
-                      height: 40,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(color: Colors.grey, width: 1.0),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                            items: [
-                              DropdownMenuItem<String>(
-                                  value: 'one',
-                                  child: TextButton(
-                                      onPressed: () {},
-                                      child: Text(
-                                        'This month',
-                                        style: TextStyle(
-                                          fontFamily: 'Nonito',
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          // color: Color.fromRGBO(47, 47, 47, 1),
-                                        ),
-                                      ))),
-                              DropdownMenuItem(
-                                  value: 'Two',
-                                  child: Text(
-                                    'All',
-                                    style: TextStyle(
-                                      fontFamily: 'Nonito',
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      //  color: Color.fromRGBO(47, 47, 47, 1),
-                                    ),
-                                  ))
-                            ],
-                            onChanged: (String? newVAlue) {
-                              newVAlue = status;
-                            }),
-                      ),
-                    ),*/
-                  ],
-                ),
-              ),
-              SizedBox(height: 10,),
               Container(
+
                 padding: EdgeInsets.only(
                   left: 20,
                   right: 20,
+                  top: 20
                 ),
                 child: Column(
                   children: [

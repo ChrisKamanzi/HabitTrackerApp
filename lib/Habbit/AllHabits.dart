@@ -68,7 +68,11 @@ class _habbit_pageState extends State<allhabbit> {
             SizedBox(height: 20),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: habitsCollection.snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection('Habits')
+                    .where('email',
+                    isEqualTo: FirebaseAuth.instance.currentUser!.email)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -79,11 +83,11 @@ class _habbit_pageState extends State<allhabbit> {
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return Center(child: Text('No habits found.'));
                   }
+
                   return ListView(
-                    children:
-                        snapshot.data!.docs.map((DocumentSnapshot document) {
+                    children: snapshot.data!.docs.map((DocumentSnapshot document) {
                       Map<String, dynamic> data =
-                          document.data() as Map<String, dynamic>;
+                      document.data() as Map<String, dynamic>;
                       bool isCompleted = data['completed'] ?? false;
 
                       DateTime now = DateTime.now();
@@ -91,8 +95,7 @@ class _habbit_pageState extends State<allhabbit> {
                           "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
 
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           width: 500,
@@ -112,7 +115,6 @@ class _habbit_pageState extends State<allhabbit> {
                                       fontFamily: 'Nonito',
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      //color: Color.fromRGBO(55, 200, 113, 1),
                                     ),
                                   ),
                                   Row(
@@ -120,16 +122,15 @@ class _habbit_pageState extends State<allhabbit> {
                                       Checkbox(
                                         value: isCompleted,
                                         onChanged: (bool? newValue) {
-                                          habitsCollection
+                                          FirebaseFirestore.instance
+                                              .collection('Habits')
                                               .doc(document.id)
                                               .update({
                                             'completed': newValue,
-                                            'completedDays.$formattedDate':
-                                                newValue,
+                                            'completedDays.$formattedDate': newValue,
                                           });
                                         },
-                                        activeColor:
-                                            Color.fromRGBO(55, 200, 113, 1),
+                                        activeColor: Color.fromRGBO(55, 200, 113, 1),
                                       ),
                                       PopupMenuButton(
                                         icon: Icon(
@@ -137,7 +138,7 @@ class _habbit_pageState extends State<allhabbit> {
                                           color: Color.fromRGBO(102, 102, 102, 1),
                                         ),
                                         itemBuilder: (BuildContext context) =>
-                                            <PopupMenuEntry<int>>[
+                                        <PopupMenuEntry<int>>[
                                           PopupMenuItem<int>(
                                             value: 1,
                                             child: TextButton(
@@ -176,6 +177,7 @@ class _habbit_pageState extends State<allhabbit> {
                 },
               ),
             ),
+
             SizedBox(
               height: 10,
             ),

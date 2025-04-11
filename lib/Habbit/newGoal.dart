@@ -71,37 +71,6 @@ class _newGoalState extends State<newGoal> {
               ),
             ),
             SizedBox(height: 15),
-            /* Card(
-              color: Colors.transparent,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  side: BorderSide(color: Colors.grey)),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: DropdownButton(
-                  isExpanded: true,
-                  items: [
-                    DropdownMenuItem<String>(
-                      value: '1 month(30 days)',
-                      child: Text('1 month(30 days)'),
-                    ),
-                    DropdownMenuItem<String>(
-                      value: '2 months(60 days)',
-                      child: Text('2 months(60 days)'),
-                    ),
-                  ],
-                  onChanged: (String? newVal) {
-                    setState(() {
-                      _selected = newVal;
-                    });
-                  },
-                  value: _selected,
-                ),
-              ),
-            ),
-            */
-
             Card(
               color: Colors.transparent,
               elevation: 0,
@@ -121,7 +90,6 @@ class _newGoalState extends State<newGoal> {
                         _selected = newVal;
                       });
                     },
-
                     items: const [
                       DropdownMenuItem<String>(
                         value: '1 month(30 days)',
@@ -141,7 +109,6 @@ class _newGoalState extends State<newGoal> {
             Card(
               color: Colors.transparent,
               elevation: 0,
-
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5),
                   side: BorderSide(color: Colors.grey)),
@@ -154,8 +121,7 @@ class _newGoalState extends State<newGoal> {
                   onChanged: (String? newValue) {
                     setState(() {
                       habbitType = newValue;
-                    }
-                    );
+                    });
                   },
                   items: const [
                     DropdownMenuItem<String>(
@@ -280,10 +246,20 @@ class _newGoalState extends State<newGoal> {
 
   Future<void> fetchHabits() async {
     try {
-      final QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('Habits').get();
+      final userEmail = FirebaseAuth.instance.currentUser?.email;
+      if (userEmail == null) {
+        print('No user is currently logged in.');
+        return;
+      }
+
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Habits')
+          .where('email', isEqualTo: userEmail)
+          .get();
+
       final List<String> fetchedHabits =
           snapshot.docs.map((doc) => doc['Habit'] as String).toList();
+
       setState(() {
         habits = fetchedHabits;
       });

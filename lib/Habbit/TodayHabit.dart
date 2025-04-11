@@ -90,10 +90,10 @@ class _habbit_pageState extends State<habbit_page> {
 
                 final theme = Theme.of(context);
                 final textColor = theme.textTheme.bodyLarge?.color ?? Colors.black;
-                final backgroundColor = theme.cardColor; // Adapts to dark/light mode
+                final backgroundColor = theme.cardColor;
                 final completedColor = theme.brightness == Brightness.dark
-                    ? Colors.green[900] // Dark green for dark mode
-                    : Color.fromRGBO(237, 255, 244, 1); // Light green for light mode
+                    ? Colors.green[900]
+                    : Color.fromRGBO(237, 255, 244, 1);
 
                 var everydayHabits = snapshot.data!.docs.where((document) {
                   Map<String, dynamic> data = document.data() as Map<String, dynamic>;
