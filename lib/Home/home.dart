@@ -559,7 +559,7 @@ class _homepageState extends ConsumerState<homepage> {
                                     .map((goalDoc) {
                                   var goalData =
                                       goalDoc.data() as Map<String, dynamic>;
-                                  String goalTitle = goalData['Goal'];
+                                  String? goalTitle = goalData['Goal'];
                                   String? selectedHabit =
                                       goalData['selecedHabit'];
 
@@ -626,7 +626,7 @@ class _homepageState extends ConsumerState<homepage> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  goalTitle,
+                                                  goalTitle ?? 'no data',
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16,

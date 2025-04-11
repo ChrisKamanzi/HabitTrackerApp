@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:new_application/widget/drawer.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -25,8 +26,10 @@ class _progresssState extends State<progresss> {
 
   Future<List<Map<String, dynamic>>> fetchGoals() async {
     try {
-      QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('Goal').get();
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Goal')
+          .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
+          .get();
 
       return snapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
@@ -41,7 +44,11 @@ class _progresssState extends State<progresss> {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('Goal')
-          .where('archieved', isEqualTo: true)
+          .where(
+            'archieved',
+            isEqualTo: true,
+          )
+          .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
           .get();
       return snapshot.docs.length;
     } catch (e) {
@@ -52,8 +59,10 @@ class _progresssState extends State<progresss> {
 
   Future<int> calculateTotalGoals() async {
     try {
-      QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('Goal').get();
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Goal')
+          .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
+          .get();
       return snapshot.docs.length;
     } catch (e) {
       print('Error: $e');
@@ -66,9 +75,11 @@ class _progresssState extends State<progresss> {
     int total = await calculateTotalGoals();
     return total > 0 ? (achieved / total).clamp(0.0, 1.0) : 0.0;
   }
+
   Future<void> _refresh() async {
     await Future.delayed(Duration(seconds: 2)); // Simulate a network request
   }
+
   @override
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).textTheme.bodyLarge?.color;
@@ -85,7 +96,7 @@ class _progresssState extends State<progresss> {
           ),
         ),
       ),
-      drawer:AppDrawer(),
+      drawer: AppDrawer(),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: SingleChildScrollView(
@@ -93,12 +104,7 @@ class _progresssState extends State<progresss> {
           child: Column(
             children: [
               Container(
-
-                padding: EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 20
-                ),
+                padding: EdgeInsets.only(left: 20, right: 20, top: 20),
                 child: Column(
                   children: [
                     Row(
@@ -121,10 +127,11 @@ class _progresssState extends State<progresss> {
                                       builder: (context) => goal()));
                             },
                             child: ShaderMask(
-                              shaderCallback: (bounds) => LinearGradient(colors: [
-                                Color.fromRGBO(255, 164, 80, 1),
-                                Color.fromRGBO(255, 92, 0, 1)
-                              ]).createShader(bounds),
+                              shaderCallback: (bounds) => LinearGradient(
+                                  colors: [
+                                    Color.fromRGBO(255, 164, 80, 1),
+                                    Color.fromRGBO(255, 92, 0, 1)
+                                  ]).createShader(bounds),
                               child: Text(
                                 'see all',
                                 style: TextStyle(
@@ -143,12 +150,14 @@ class _progresssState extends State<progresss> {
                     FutureBuilder<double>(
                       future: calculatePercentAchieved(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
                         }
 
                         if (snapshot.hasError) {
-                          return Center(child: Text("Error: ${snapshot.error}"));
+                          return Center(
+                              child: Text("Error: ${snapshot.error}"));
                         }
 
                         double percentAchieved = snapshot.data ?? 0.0;
@@ -181,9 +190,13 @@ class _progresssState extends State<progresss> {
                                 child: StreamBuilder(
                                   stream: FirebaseFirestore.instance
                                       .collection('Goal')
+                                      .where('email',
+                                          isEqualTo: FirebaseAuth
+                                              .instance.currentUser!.email)
                                       .snapshots(),
                                   builder: (context,
-                                      AsyncSnapshot<QuerySnapshot> goalSnapshot) {
+                                      AsyncSnapshot<QuerySnapshot>
+                                          goalSnapshot) {
                                     if (!goalSnapshot.hasData ||
                                         goalSnapshot.data!.docs.isEmpty) {
                                       return Center(
@@ -212,6 +225,11 @@ class _progresssState extends State<progresss> {
                                         return StreamBuilder<QuerySnapshot>(
                                           stream: FirebaseFirestore.instance
                                               .collection('Habits')
+                                              .where('email',
+                                                  isEqualTo: FirebaseAuth
+                                                      .instance
+                                                      .currentUser!
+                                                      .email)
                                               .where('Habit',
                                                   isEqualTo: selectedHabit)
                                               .snapshots(),
@@ -227,7 +245,8 @@ class _progresssState extends State<progresss> {
                                                 habitSnapshot
                                                     .data!.docs.isEmpty) {
                                               return Padding(
-                                                padding: const EdgeInsets.all(10),
+                                                padding:
+                                                    const EdgeInsets.all(10),
                                                 child: Text(
                                                     "Habit data not found for $selectedHabit"),
                                               );
@@ -238,13 +257,14 @@ class _progresssState extends State<progresss> {
                                                 .data() as Map<String, dynamic>;
                                             Map<String, dynamic>
                                                 completedDaysMap =
-                                                habitData['completedDays'] ?? {};
+                                                habitData['completedDays'] ??
+                                                    {};
                                             List<String> completedDates =
                                                 completedDaysMap.keys.toList();
 
                                             DateTime now = DateTime.now();
-                                            DateTime thirtyDaysAgo =
-                                                now.subtract(Duration(days: 30));
+                                            DateTime thirtyDaysAgo = now
+                                                .subtract(Duration(days: 30));
 
                                             int completedDays = completedDates
                                                 .map((date) =>
@@ -253,7 +273,8 @@ class _progresssState extends State<progresss> {
                                                     date.isAfter(thirtyDaysAgo))
                                                 .length;
 
-                                            double progress = completedDays / 30;
+                                            double progress =
+                                                completedDays / 30;
 
                                             return Padding(
                                               padding: EdgeInsets.only(
@@ -275,7 +296,8 @@ class _progresssState extends State<progresss> {
                                                       // Circular progress indicator
                                                       Padding(
                                                         padding:
-                                                            const EdgeInsets.only(
+                                                            const EdgeInsets
+                                                                .only(
                                                                 left: 5,
                                                                 top: 5,
                                                                 bottom: 5),
@@ -288,9 +310,10 @@ class _progresssState extends State<progresss> {
                                                                   'Nonito',
                                                               fontSize: 11,
                                                               fontWeight:
-                                                                  FontWeight.w700,
-                                                              color:
-                                                                  Color.fromRGBO(
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color: Color
+                                                                  .fromRGBO(
                                                                       95,
                                                                       227,
                                                                       148,
@@ -302,10 +325,16 @@ class _progresssState extends State<progresss> {
                                                           linearGradient:
                                                               LinearGradient(
                                                                   colors: [
-                                                                Color.fromRGBO(55,
-                                                                    200, 113, 1),
-                                                                Color.fromRGBO(95,
-                                                                    227, 148, 1),
+                                                                Color.fromRGBO(
+                                                                    55,
+                                                                    200,
+                                                                    113,
+                                                                    1),
+                                                                Color.fromRGBO(
+                                                                    95,
+                                                                    227,
+                                                                    148,
+                                                                    1),
                                                               ]),
                                                         ),
                                                       ),
@@ -331,7 +360,8 @@ class _progresssState extends State<progresss> {
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w700,
-                                                                color: textColor,
+                                                                color:
+                                                                    textColor,
                                                               ),
                                                             ),
                                                           ),
@@ -339,7 +369,8 @@ class _progresssState extends State<progresss> {
                                                             '$completedDays from 30 days target',
                                                             style: TextStyle(
                                                               fontWeight:
-                                                                  FontWeight.w400,
+                                                                  FontWeight
+                                                                      .w400,
                                                               fontSize: 14,
                                                               fontFamily:
                                                                   'Nonito',
@@ -352,19 +383,23 @@ class _progresssState extends State<progresss> {
                                                       // Achieved status tag
                                                       Padding(
                                                         padding:
-                                                            const EdgeInsets.only(
+                                                            const EdgeInsets
+                                                                .only(
                                                                 right: 10),
                                                         child: Container(
                                                           padding: EdgeInsets
                                                               .symmetric(
-                                                                  horizontal: 5),
+                                                                  horizontal:
+                                                                      5),
                                                           height: 20,
                                                           decoration:
                                                               BoxDecoration(
                                                             borderRadius:
                                                                 BorderRadius
-                                                                    .circular(80),
-                                                            color: progress >= 1.0
+                                                                    .circular(
+                                                                        80),
+                                                            color: progress >=
+                                                                    1.0
                                                                 ? Colors.greenAccent[
                                                                     100]
                                                                 : Colors
@@ -379,7 +414,8 @@ class _progresssState extends State<progresss> {
                                                               fontFamily:
                                                                   'Nonito',
                                                               fontWeight:
-                                                                  FontWeight.w500,
+                                                                  FontWeight
+                                                                      .w500,
                                                               color: progress >=
                                                                       1.0
                                                                   ? Colors.green
